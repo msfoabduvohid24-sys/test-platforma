@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test Platforma</title>
+<title>ABCO Academy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -269,13 +269,13 @@
     <button onclick="setLang('ru')" id="loginLangRU" style="padding:5px 12px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#888;font-weight:700;font-size:12px;cursor:pointer;">RU</button>
   </div>
   <div class="login-side">
-      <div class="brand"><div class="brand-mark">T</div><span class="label">Test Platforma</span></div>
+      <div class="brand"><div class="brand-mark">A</div><span class="label">ABCO Academy</span></div>
       <div class="login-pitch">
-        <div class="eyebrow">Onlayn bilim sinovi</div>
-        <h1>Bilimingizni sinab ko'ring, natijangizni shu zahoti bilib oling.</h1>
+        <div class="eyebrow">ABCO Academy — Onlayn test tizimi</div>
+        <h1>ABCO Academy bilan bilimingizni sinab ko'ring va natijangizni shu zahoti bilib oling.</h1>
         <p>O'qituvchingiz tomonidan biriktirilgan test orqali tizimga kiring. Vaqt nazorati va aniq natijalar bilan.</p>
       </div>
-      <div class="login-foot">© 2026 Test Platforma</div>
+      <div class="login-foot">© 2026 ABCO Academy</div>
     </div>
     <div class="login-form-side">
       <div class="login-card">
@@ -306,10 +306,11 @@
 <div id="adminScreen" class="screen">
   <div class="app-shell">
     <div class="sidebar">
-      <div class="brand"><div class="brand-mark">T</div><span class="label">Test Platforma</span></div>
+      <div class="brand"><div class="brand-mark">A</div><span class="label">ABCO Academy</span></div>
       <button class="nav-item active" data-tab="dashboard" onclick="switchAdminTab('dashboard')">📊 <span class="label">Bosh sahifa</span></button>
       <button class="nav-item" data-tab="students" onclick="switchAdminTab('students')">👥 <span class="label">O'quvchilar</span></button>
-      <button class="nav-item" data-tab="questions" onclick="switchAdminTab('questions')">📝 <span class="label">Savollar banki</span></button>
+      <button class="nav-item" data-tab="questions" onclick="switchAdminTab('questions')">📝 <span class="label">Savollar banki 1</span></button>
+      <button class="nav-item" data-tab="questions2" onclick="switchAdminTab('questions2')">📚 <span class="label">Savollar banki 2</span></button>
       <button class="nav-item" data-tab="assign" onclick="switchAdminTab('assign')">🎯 <span class="label">Test biriktirish</span></button>
       <button class="nav-item" data-tab="results" onclick="switchAdminTab('results')">🏆 <span class="label">Natijalar</span></button>
       <button class="nav-item" data-tab="monitor" onclick="switchAdminTab('monitor')">👁 <span class="label">Jonli monitoring</span></button>
@@ -318,7 +319,7 @@
           <button onclick="setLang('uz')" id="adminLangUZ" style="flex:1;padding:5px;border:1.5px solid #4C46B0;border-radius:6px;background:#4C46B0;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">UZ</button>
           <button onclick="setLang('ru')" id="adminLangRU" style="flex:1;padding:5px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#888;font-weight:700;font-size:12px;cursor:pointer;">RU</button>
         </div>
-        <div class="who"><strong id="adminWhoName">Admin</strong>boshqaruvchi</div>
+        <div class="who"><strong id="adminWhoName">Admin</strong>admin</div>
         <button class="btn btn-ghost btn-sm" style="width:100%" onclick="logout()">Chiqish</button>
       </div>
     </div>
@@ -331,7 +332,8 @@
         </div>
         <div class="stat-grid">
           <div class="card stat-card"><div class="num" id="statStudents">0</div><div class="lbl">O'quvchilar</div></div>
-          <div class="card stat-card"><div class="num" id="statQuestions">0</div><div class="lbl">Savollar banki</div></div>
+          <div class="card stat-card"><div class="num" id="statQuestions">0</div><div class="lbl">Bank 1 savollar</div></div>
+          <div class="card stat-card"><div class="num" id="statQuestions2">0</div><div class="lbl">Bank 2 savollar</div></div>
           <div class="card stat-card"><div class="num" id="statAssigned">0</div><div class="lbl">Biriktirilgan testlar</div></div>
           <div class="card stat-card"><div class="num" id="statCompleted">0</div><div class="lbl">Tugatilgan testlar</div></div>
         </div>
@@ -353,7 +355,7 @@
             <input class="search-box" id="studentSearch" placeholder="Ism yoki login bo'yicha qidirish..." oninput="renderStudents()">
           </div>
           <table>
-            <thead><tr><th>Ism familiya</th><th>Login</th><th>Parol</th><th>Biriktirilgan test</th><th></th></tr></thead>
+            <thead><tr><th>Ism familiya</th><th>Login</th><th>Parol</th><th>Guruh</th><th>Biriktirilgan test</th><th></th></tr></thead>
             <tbody id="studentsTbody"></tbody>
           </table>
           <div id="studentsEmpty" class="empty-state hidden"><div class="ico">👥</div>Hali o'quvchi qo'shilmagan<br><br><button class="btn btn-accent btn-sm" onclick="openStudentModal()">Birinchi o'quvchini qo'shish</button></div>
@@ -363,7 +365,7 @@
       <!-- QUESTIONS BANK -->
       <div id="admin-questions" class="admin-tab hidden">
         <div class="main-head">
-          <div><h1>Savollar banki</h1><p id="questionsCountText">Jami 0 ta savol</p></div>
+          <div><h1>Savollar banki 1</h1><p id="questionsCountText">Jami 0 ta savol</p></div>
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <button class="btn btn-ghost" onclick="openFolderModal()">📁 Papka yaratish</button>
             <button class="btn btn-ghost" onclick="openExcelImport()">📊 Excel yuklash</button>
@@ -391,15 +393,67 @@
         </div>
       </div>
 
+      <!-- SAVOLLAR BANKI 2 (alohida, aralashmaydigan) -->
+      <div id="admin-questions2" class="admin-tab hidden">
+        <div class="main-head">
+          <div>
+            <h1>Savollar banki 2</h1>
+            <p id="questions2CountText">Jami 0 ta savol</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-ghost" onclick="openFolder2Modal()">📁 Papka yaratish</button>
+            <button class="btn btn-ghost" onclick="openExcel2Import()">📊 Excel yuklash</button>
+            <button class="btn btn-ghost" onclick="openBulk2Import()">📋 Ko'plab qo'shish</button>
+            <button class="btn btn-accent" onclick="openQuestion2Modal()">+ Savol qo'shish</button>
+            <button class="btn" style="background:#E24B4A;color:#fff;border-color:#E24B4A" onclick="deleteAllQuestions2()">🗑️ Hammasini o'chirish</button>
+          </div>
+        </div>
+        <div style="background:#EEF6FF; border-radius:10px; padding:12px 16px; margin-bottom:18px; font-size:13.5px; color:#1D4ED8; font-weight:600; border:1px solid #BFDBFE;">
+          📚 Bu bank birinchi bankdan <strong>to'liq alohida</strong> — savollar aralashmaydi. Test biriktirishda "Bank 2" ni tanlaysiz.
+        </div>
+        <!-- Papkalar -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button class="folder-tab active" data-folder2="" onclick="selectFolder2('')">📂 Barchasi</button>
+            <div id="folderTabs2"></div>
+          </div>
+        </div>
+        <div class="card pad">
+          <div class="toolbar">
+            <input class="search-box" id="questionSearch2" placeholder="Savol matni bo'yicha qidirish..." oninput="renderQuestions2()">
+          </div>
+          <table>
+            <thead><tr><th style="width:45px">#</th><th>Savol</th><th>Papka</th><th>To'g'ri javob</th><th></th></tr></thead>
+            <tbody id="questionsTbody2"></tbody>
+          </table>
+          <div id="questionsEmpty2" class="empty-state hidden"><div class="ico">📚</div>Hali 2-bankga savol qo'shilmagan<br><br><button class="btn btn-accent btn-sm" onclick="openQuestion2Modal()">Birinchi savolni qo'shish</button></div>
+        </div>
+      </div>
+
       <!-- ASSIGN TEST -->
       <div id="admin-assign" class="admin-tab hidden">
         <div class="main-head">
-          <div><h1>Test biriktirish</h1><p>O'quvchiga papka va savollar sonini belgilang</p></div>
+          <div><h1>Test biriktirish</h1><p>O'quvchiga yoki guruhga papka va savollar sonini belgilang</p></div>
         </div>
-        <div class="card pad" style="max-width:680px;">
+
+        <!-- Tabs for individual vs group -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button id="assignTabIndividual" class="folder-tab active" onclick="switchAssignTab('individual')">👤 Alohida o'quvchi</button>
+          <button id="assignTabGroup" class="folder-tab" onclick="switchAssignTab('group')">👥 Guruhga biriktirish</button>
+        </div>
+
+        <!-- Individual assign -->
+        <div id="assignIndividualPanel" class="card pad" style="max-width:680px;">
           <div class="field">
             <label>O'quvchi</label>
             <select id="assignStudentSelect"></select>
+          </div>
+          <div class="field">
+            <label>Savollar banki</label>
+            <select id="assignBankSelect" onchange="updateAssignCount()" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+              <option value="1">📝 Bank 1 (asosiy)</option>
+              <option value="2">📚 Bank 2 (qo'shimcha)</option>
+            </select>
           </div>
           <div class="field">
             <label>Papka (qaysi papkadan savol olinsin)</label>
@@ -419,6 +473,45 @@
           <button class="btn btn-primary" onclick="assignTest()">Testni biriktirish</button>
           <div id="assignMsg" style="margin-top:14px; font-size:13.5px; font-weight:600;"></div>
         </div>
+
+        <!-- Group assign -->
+        <div id="assignGroupPanel" class="card pad" style="max-width:680px; display:none;">
+          <div style="background:#F0EEFC; border-radius:10px; padding:14px 16px; margin-bottom:18px; font-size:14px; color:#4C46B0; font-weight:600;">
+            🇷🇺 Rus guruhiga test biriktirish — bir bosimda barcha RU guruh o'quvchilariga test beriladi
+          </div>
+          <div class="field">
+            <label>Guruh tanlang</label>
+            <select id="assignGroupSelect" onchange="updateGroupAssignCount()" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+              <option value="UZ">🇺🇿 O'zbek guruhi (UZ)</option>
+              <option value="RU">🇷🇺 Rus guruhi (RU)</option>
+            </select>
+          </div>
+          <div id="groupMembersInfo" style="font-size:13.5px; color:var(--ink-soft); margin-bottom:14px; padding:10px 14px; background:var(--bg); border-radius:9px;"></div>
+          <div class="field">
+            <label>Savollar banki</label>
+            <select id="assignGroupBankSelect" onchange="updateGroupAssignCount()" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+              <option value="1">📝 Bank 1 (asosiy)</option>
+              <option value="2">📚 Bank 2 (qo'shimcha)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Papka (qaysi papkadan savol olinsin)</label>
+            <select id="assignGroupFolderSelect" onchange="updateGroupAssignCount()">
+              <option value="">Barcha papkalar (aralash)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nechta savol tasodifiy tanlansin</label>
+            <input type="number" id="assignGroupQuestionCount" min="1" value="20" oninput="updateGroupAssignCount()">
+            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:5px;" id="assignGroupCountHint"></div>
+          </div>
+          <div class="field">
+            <label>Test vaqti (daqiqa)</label>
+            <input type="number" id="assignGroupDuration" min="1" value="30">
+          </div>
+          <button class="btn btn-primary" onclick="assignGroupTest()">Guruhga testni biriktirish</button>
+          <div id="assignGroupMsg" style="margin-top:14px; font-size:13.5px; font-weight:600;"></div>
+        </div>
       </div>
 
       <!-- RESULTS -->
@@ -427,8 +520,15 @@
           <div><h1>Natijalar</h1><p>Barcha o'quvchilarning test natijalari</p></div>
         </div>
         <div class="card pad">
+          <div class="toolbar" style="margin-bottom:14px;">
+            <select id="resultsGroupFilter" onchange="renderResults()" style="padding:10px 13px; border-radius:9px; border:1.5px solid var(--line); font-size:14px; background:#fff;">
+              <option value="">Barcha guruhlar</option>
+              <option value="UZ">🇺🇿 UZ guruhi</option>
+              <option value="RU">🇷🇺 RU guruhi</option>
+            </select>
+          </div>
           <table>
-            <thead><tr><th>O'quvchi</th><th>Savollar soni</th><th>To'g'ri</th><th>Foiz</th><th>Holat</th><th>Sana</th><th></th></tr></thead>
+            <thead><tr><th>O'quvchi</th><th>Guruh</th><th>Savollar soni</th><th>To'g'ri</th><th>Foiz</th><th>Holat</th><th>Sana</th><th></th></tr></thead>
             <tbody id="resultsTbody"></tbody>
           </table>
           <div id="resultsEmpty" class="empty-state hidden"><div class="ico">🏆</div>Hali natijalar yo'q</div>
@@ -459,7 +559,7 @@
 <div id="studentScreen" class="screen">
   <div class="app-shell">
     <div class="sidebar">
-      <div class="brand"><div class="brand-mark">T</div><span class="label">Test Platforma</span></div>
+      <div class="brand"><div class="brand-mark">A</div><span class="label">ABCO Academy</span></div>
       <button class="nav-item active" data-tab="home" onclick="switchStudentTab('home')">🏠 <span class="label">Bosh sahifa</span></button>
       <button class="nav-item" data-tab="history" onclick="switchStudentTab('history')">📜 <span class="label">Natijalarim</span></button>
       <div class="sidebar-foot">
@@ -496,7 +596,7 @@
     <div style="height:4px;background:#E5E5E0;width:100%;position:relative;"><div id="testProgressBar" style="height:100%;background:var(--primary);transition:width 0.3s ease;width:0%"></div></div>
     <div class="test-top" style="padding:0 24px;height:60px;">
       <div style="display:flex;align-items:center;gap:16px;">
-        <div class="brand"><div class="brand-mark">T</div><span class="label">Test</span></div>
+        <div class="brand"><div class="brand-mark">A</div><span class="label">ABCO Academy</span></div>
         <!-- Savol hisoblagichi -->
         <div style="display:flex;align-items:center;gap:6px;background:#F0EEFC;border-radius:10px;padding:7px 14px;border:1.5px solid #C8C4F0;">
           <span style="font-size:20px;">📝</span>
@@ -563,9 +663,19 @@
   <div class="modal">
     <h3 id="studentModalTitle">O'quvchi qo'shish</h3>
     <input type="hidden" id="studentEditId">
-    <div class="field"><label>Ism familiya</label><input id="studentName" placeholder="Aliyev Ali"></div>
-    <div class="field"><label>Login</label><input id="studentUsername" placeholder="ali_2025"></div>
-    <div class="field"><label>Parol</label><input id="studentPassword" placeholder="kamida 4 ta belgi"></div>
+    <div class="grid-2">
+      <div class="field" style="grid-column:1/-1"><label>Ism familiya</label><input id="studentName" placeholder="Ali Valiyev"></div>
+      <div class="field"><label>Login</label><input id="studentUsername" placeholder="ali_2025"></div>
+      <div class="field"><label>Parol</label><input id="studentPassword" placeholder="parol123"></div>
+    </div>
+    <div class="field">
+      <label>Guruh / Группа</label>
+      <select id="studentGroup" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+        <option value="">— Guruhsiz —</option>
+        <option value="UZ">🇺🇿 O'zbek guruhi (UZ)</option>
+        <option value="RU">🇷🇺 Rus guruhi (RU)</option>
+      </select>
+    </div>
     <div class="login-error" id="studentModalError"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeStudentModal()">Bekor qilish</button>
@@ -573,6 +683,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Question modal -->
 <div class="modal-bg" id="questionModalBg">
@@ -684,6 +795,109 @@ Mavzu: Tarix (ixtiyoriy)</code>
     <div id="resultDetailBody" style="max-height:60vh; overflow-y:auto;"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" style="flex:1" onclick="closeResultDetail()">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank 2: Question modal -->
+<div class="modal-bg" id="questionModal2Bg">
+  <div class="modal" style="max-width:540px;">
+    <h3 id="questionModal2Title">Savol qo'shish (Bank 2)</h3>
+    <input type="hidden" id="questionEdit2Id">
+    <div class="field"><label>Savol matni</label><input id="qForm2Text" placeholder="Savolni shu yerga kiriting"></div>
+    <div class="field">
+      <label>Papka</label>
+      <select id="qForm2Folder" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+        <option value="">Papkasiz</option>
+      </select>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>A varianti</label><input id="qForm2A" placeholder="A javob"></div>
+      <div class="field"><label>B varianti</label><input id="qForm2B" placeholder="B javob"></div>
+      <div class="field"><label>C varianti</label><input id="qForm2C" placeholder="C javob"></div>
+      <div class="field"><label>D varianti</label><input id="qForm2D" placeholder="D javob"></div>
+    </div>
+    <div class="field">
+      <label>To'g'ri javob</label>
+      <select id="qForm2Correct">
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+      </select>
+    </div>
+    <div class="login-error" id="questionModal2Error"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeQuestion2Modal()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveQuestion2()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank 2: Bulk import modal -->
+<div class="modal-bg" id="bulkModal2Bg">
+  <div class="modal" style="max-width:600px;">
+    <h3>Ko'plab savol qo'shish (Bank 2)</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-top:-10px;">
+      Har bir savolni shu formatda yozing:<br>
+      <code style="background:var(--bg); padding:2px 6px; border-radius:5px; display:block; margin-top:8px; white-space:pre-line; font-size:12.5px;">Savol matni
+A) variant
+B) variant
+C) variant
+D) variant
+Javob: B
+Mavzu: Tarix (ixtiyoriy)</code>
+    </p>
+    <div class="field">
+      <textarea id="bulkText2" rows="10" style="width:100%; padding:12px; border-radius:9px; border:1.5px solid var(--line); font-size:13.5px; font-family:monospace;" placeholder="Savollarni shu yerga joylashtiring..."></textarea>
+    </div>
+    <div class="login-error" id="bulkModal2Error"></div>
+    <div id="bulkPreview2" style="font-size:13px; color:var(--good); font-weight:700; margin-top:6px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeBulk2Import()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveBulk2Import()">Hammasini qo'shish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank 2: Folder modal -->
+<div class="modal-bg" id="folderModal2Bg">
+  <div class="modal" style="max-width:400px;">
+    <h3>📁 Papka yaratish (Bank 2)</h3>
+    <div class="field">
+      <label>Papka nomi</label>
+      <input id="folderName2Input" placeholder="masalan: Modul 1, RU savollar...">
+    </div>
+    <div class="login-error" id="folderModal2Error"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeFolder2Modal()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveFolder2()">Yaratish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bank 2: Excel import modal -->
+<div class="modal-bg" id="excelModal2Bg">
+  <div class="modal" style="max-width:540px;">
+    <h3>📊 Excel orqali savollar yuklash (Bank 2)</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-top:-8px; margin-bottom:16px;">
+      Excel fayli <strong>Savol, A, B, C, D, Javob</strong> ustunlaridan iborat bo'lishi kerak.
+    </p>
+    <div class="field">
+      <label>Papka tanlang</label>
+      <select id="excelFolder2Select">
+        <option value="">Papkasiz</option>
+      </select>
+    </div>
+    <div class="excel-drop" id="excelDropZone2" onclick="$('excelFileInput2').click()">
+      <div class="ico">📊</div>
+      <p><strong>Excel faylni shu yerga tashlang</strong> yoki bosib tanlang</p>
+      <p style="margin-top:6px; font-size:12.5px;">.xlsx yoki .xls formatida</p>
+    </div>
+    <input type="file" id="excelFileInput2" accept=".xlsx,.xls" style="display:none" onchange="handleExcelFile2(this)">
+    <div id="excelPreview2" style="margin-top:14px; font-size:13.5px; font-weight:600; color:var(--good);"></div>
+    <div id="excelPreviewTable2" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
+    <div class="login-error" id="excelModal2Error"></div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <button class="btn btn-ghost" onclick="closeExcel2Import()">Bekor qilish</button>
+      <button class="btn btn-primary" id="excelSaveBtn2" disabled onclick="saveExcel2Import()">Yuklash</button>
     </div>
   </div>
 </div>
@@ -869,18 +1083,21 @@ restoreSession();
 // ADMIN: DATA LOADING
 // ============================================================
 async function loadAdminData(){
-  const [stuSnap, qSnap, rSnap] = await Promise.all([
+  const [stuSnap, qSnap, rSnap, q2Snap] = await Promise.all([
     getDocs(collection(db,'students')),
     getDocs(collection(db,'questions')),
-    getDocs(query(collection(db,'results'), orderBy('completedAt','desc')))
+    getDocs(query(collection(db,'results'), orderBy('completedAt','desc'))),
+    getDocs(collection(db,'questions2'))
   ]);
   students = stuSnap.docs.map(d=>({id:d.id, ...d.data()}));
   questions = qSnap.docs.map(d=>({id:d.id, ...d.data()}));
   results = rSnap.docs.map(d=>({id:d.id, ...d.data()}));
+  questions2 = q2Snap.docs.map(d=>({id:d.id, ...d.data()}));
 
   renderDashboard();
   renderStudents();
   renderQuestions();
+  renderQuestions2();
   populateAssignSelectors();
   renderResults();
 }
@@ -888,6 +1105,7 @@ async function loadAdminData(){
 function renderDashboard(){
   $('statStudents').textContent = students.length;
   $('statQuestions').textContent = questions.length;
+  if($('statQuestions2')) $('statQuestions2').textContent = questions2.length;
   $('statAssigned').textContent = students.filter(s=>s.assignedTest).length;
   $('statCompleted').textContent = results.length;
 
@@ -925,10 +1143,12 @@ window.openStudentModal = function(editId){
     $('studentName').value = s.name;
     $('studentUsername').value = s.username;
     $('studentPassword').value = s.password;
+    if($('studentGroup')) $('studentGroup').value = s.group || '';
   } else {
     $('studentModalTitle').textContent = "O'quvchi qo'shish";
     $('studentEditId').value = '';
     $('studentName').value = ''; $('studentUsername').value=''; $('studentPassword').value='';
+    if($('studentGroup')) $('studentGroup').value = '';
   }
   $('studentModalBg').classList.add('show');
 }
@@ -939,6 +1159,7 @@ window.saveStudent = async function(){
   const name = $('studentName').value.trim();
   const username = $('studentUsername').value.trim();
   const password = $('studentPassword').value;
+  const group = $('studentGroup')?.value || '';
   const errEl = $('studentModalError');
   errEl.classList.remove('show');
 
@@ -952,9 +1173,9 @@ window.saveStudent = async function(){
 
   try{
     if(editId){
-      await updateDoc(doc(db,'students',editId), {name, username, password});
+      await updateDoc(doc(db,'students',editId), {name, username, password, group});
     } else {
-      await addDoc(collection(db,'students'), {name, username, password, assignedTest:null, createdAt: serverTimestamp()});
+      await addDoc(collection(db,'students'), {name, username, password, group, assignedTest:null, createdAt: serverTimestamp()});
     }
     closeStudentModal();
     await loadAdminData();
@@ -977,11 +1198,13 @@ window.renderStudents = function(){
   $('studentsEmpty').classList.toggle('hidden', students.length>0);
   filtered.forEach(s=>{
     const assignedLabel = s.assignedTest ? `<span class="badge badge-good">Biriktirilgan (${s.assignedTest.questionIds.length} ta, ${s.assignedTest.duration} daq)</span>` : `<span class="badge badge-wait">Yo'q</span>`;
+    const groupBadge = s.group === 'RU' ? `<span class="badge" style="background:#FEE2E2;color:#B91C1C;">🇷🇺 RU</span>` : s.group === 'UZ' ? `<span class="badge" style="background:#DBEAFE;color:#1D4ED8;">🇺🇿 UZ</span>` : `<span style="color:var(--ink-soft)">—</span>`;
     tbody.innerHTML += `
       <tr>
         <td><strong>${escapeHtml(s.name)}</strong></td>
         <td>${escapeHtml(s.username)}</td>
         <td><span style="font-family:monospace; color:var(--ink-soft)">${escapeHtml(s.password)}</span></td>
+        <td>${groupBadge}</td>
         <td>${assignedLabel}</td>
         <td style="white-space:nowrap;">
           <button class="icon-btn" onclick="openStudentModal('${s.id}')" title="Tahrirlash">✏️</button>
@@ -1356,33 +1579,422 @@ $('bulkText')?.addEventListener?.('input', ()=>{
   $('bulkPreview').textContent = parsed.length ? `✓ ${parsed.length} ta savol aniqlandi${errors.length?` (${errors.length} ta xato bloklar o'tkazib yuborildi)`:''}` : '';
 });
 
+$('bulkText')?.addEventListener?.('input', ()=>{
+  const {parsed, errors} = parseBulkText($('bulkText').value);
+  $('bulkPreview').textContent = parsed.length ? `✓ ${parsed.length} ta savol aniqlandi${errors.length?` (${errors.length} ta xato bloklar o'tkazib yuborildi)`:''}` : '';
+});
+
+// ============================================================
+// ADMIN: SAVOLLAR BANKI 2 (alohida Firestore collection: questions2)
+// ============================================================
+let questions2 = [];
+let currentFolder2 = '';
+let excelParsedQuestions2 = [];
+
+function getFolders2(){
+  return [...new Set(questions2.map(q=>q.folder||q.tag||'').filter(Boolean))].sort();
+}
+
+function refreshFolderTabs2(){
+  const folds = getFolders2();
+  const tabsEl = $('folderTabs2');
+  if(!tabsEl) return;
+  tabsEl.innerHTML = folds.map(f=>`
+    <button class="folder-tab ${currentFolder2===f?'active':''}" data-folder2="${escapeHtml(f)}" onclick="selectFolder2('${escapeHtml(f)}')">
+      📁 ${escapeHtml(f)}
+      <span class="del-folder" onclick="event.stopPropagation(); deleteFolder2('${escapeHtml(f)}')" title="Papkani o'chirish">✕</span>
+    </button>`).join('');
+  const allBtn = document.querySelector('.folder-tab[data-folder2=""]');
+  if(allBtn) allBtn.classList.toggle('active', currentFolder2==='');
+}
+
+window.selectFolder2 = function(folder){
+  currentFolder2 = folder;
+  refreshFolderTabs2();
+  renderQuestions2();
+}
+
+async function loadQuestions2(){
+  const snap = await getDocs(collection(db,'questions2'));
+  questions2 = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderQuestions2();
+  refreshAssignFolderSelect2();
+}
+
+function refreshAssignFolderSelect2(){
+  const folds = getFolders2();
+  const sels = [$('assignFolderSelect')].filter(Boolean);
+  // Also update bank-specific selects when bank 2 is selected
+}
+
+window.renderQuestions2 = function(){
+  refreshFolderTabs2();
+  const search = ($('questionSearch2')?.value || '').toLowerCase();
+  const tbody = $('questionsTbody2');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  let filtered = questions2.filter(q => q.text.toLowerCase().includes(search));
+  if(currentFolder2) filtered = filtered.filter(q => (q.folder||q.tag||'') === currentFolder2);
+  $('questions2CountText').textContent = currentFolder2
+    ? `"${currentFolder2}" papkasida ${filtered.length} ta savol (jami: ${questions2.length})`
+    : `Jami ${questions2.length} ta savol`;
+  $('questionsEmpty2').classList.toggle('hidden', questions2.length>0);
+  filtered.forEach((q,i)=>{
+    const qFolder = q.folder || q.tag || '';
+    tbody.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${escapeHtml(q.text).slice(0,70)}${q.text.length>70?'…':''}</td>
+        <td>${qFolder ? `<span class="badge badge-wait">📁 ${escapeHtml(qFolder)}</span>` : '<span style="color:var(--ink-soft)">—</span>'}</td>
+        <td><span class="badge badge-good">${q.correct}</span></td>
+        <td style="white-space:nowrap;">
+          <button class="icon-btn" onclick="openQuestion2Modal('${q.id}')" title="Tahrirlash">✏️</button>
+          <button class="icon-btn" onclick="deleteQuestion2('${q.id}')" title="O'chirish">🗑️</button>
+        </td>
+      </tr>`;
+  });
+}
+
+window.openQuestion2Modal = function(editId, defaultFolder){
+  $('questionModal2Error').classList.remove('show');
+  const folds = getFolders2();
+  const foldSel = $('qForm2Folder');
+  if(foldSel){
+    foldSel.innerHTML = '<option value="">Papkasiz</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+  }
+  if(editId){
+    const q = questions2.find(x=>x.id===editId);
+    $('questionModal2Title').textContent = "Savolni tahrirlash (Bank 2)";
+    $('questionEdit2Id').value = editId;
+    $('qForm2Text').value = q.text;
+    if(foldSel) foldSel.value = q.folder || q.tag || '';
+    $('qForm2A').value = q.options.A; $('qForm2B').value = q.options.B;
+    $('qForm2C').value = q.options.C; $('qForm2D').value = q.options.D;
+    $('qForm2Correct').value = q.correct;
+  } else {
+    $('questionModal2Title').textContent = "Savol qo'shish (Bank 2)";
+    $('questionEdit2Id').value = '';
+    ['qForm2Text','qForm2A','qForm2B','qForm2C','qForm2D'].forEach(id=>$(id).value='');
+    $('qForm2Correct').value = 'A';
+    if(foldSel) foldSel.value = defaultFolder || currentFolder2 || '';
+  }
+  $('questionModal2Bg').classList.add('show');
+}
+window.closeQuestion2Modal = function(){ $('questionModal2Bg').classList.remove('show'); }
+
+window.saveQuestion2 = async function(){
+  const editId = $('questionEdit2Id').value;
+  const text = $('qForm2Text').value.trim();
+  const A=$('qForm2A').value.trim(), B=$('qForm2B').value.trim(), C=$('qForm2C').value.trim(), D=$('qForm2D').value.trim();
+  const correct = $('qForm2Correct').value;
+  const errEl = $('questionModal2Error');
+  errEl.classList.remove('show');
+  if(!text || !A || !B || !C || !D){
+    errEl.textContent = "Savol va barcha 4 ta variantni to'ldiring."; errEl.classList.add('show'); return;
+  }
+  const folder = $('qForm2Folder')?.value || '';
+  const payload = {text, tag:folder, folder, options:{A,B,C,D}, correct};
+  try{
+    if(editId){
+      await updateDoc(doc(db,'questions2',editId), payload);
+    } else {
+      await addDoc(collection(db,'questions2'), {...payload, createdAt: serverTimestamp()});
+    }
+    closeQuestion2Modal();
+    await loadQuestions2();
+  } catch(err){
+    errEl.textContent = "Xatolik: " + err.message; errEl.classList.add('show');
+  }
+}
+
+window.deleteQuestion2 = async function(id){
+  if(!confirm("Bu savolni o'chirmoqchimisiz?")) return;
+  await deleteDoc(doc(db,'questions2',id));
+  await loadQuestions2();
+}
+
+window.deleteAllQuestions2 = async function(){
+  if(!questions2||questions2.length===0){alert("Bank 2 bo'sh!");return;}
+  if(!confirm("Bank 2 dagi barcha "+questions2.length+" ta savol o'chiriladi!"))return;
+  try{
+    await Promise.all(questions2.map(q=>deleteDoc(doc(db,'questions2',q.id))));
+    await loadQuestions2();
+    alert("Bank 2 tozalandi.");
+  }catch(err){alert("Xatolik: "+err.message);}
+}
+
+// Bank 2 Folder
+window.openFolder2Modal = function(){
+  $('folderName2Input').value = '';
+  $('folderModal2Error').classList.remove('show');
+  $('folderModal2Bg').classList.add('show');
+}
+window.closeFolder2Modal = function(){ $('folderModal2Bg').classList.remove('show'); }
+window.saveFolder2 = function(){
+  const name = $('folderName2Input').value.trim();
+  if(!name){ $('folderModal2Error').textContent='Papka nomini kiriting'; $('folderModal2Error').classList.add('show'); return; }
+  if(getFolders2().includes(name)){ $('folderModal2Error').textContent='Bu nomli papka allaqachon bor'; $('folderModal2Error').classList.add('show'); return; }
+  closeFolder2Modal();
+  openQuestion2Modal(null, name);
+  alert(`"${name}" papkasi uchun birinchi savolni qo'shing.`);
+}
+
+window.deleteFolder2 = async function(folderName){
+  const count = questions2.filter(q=>(q.folder||q.tag||'')=== folderName).length;
+  if(!confirm(`"${folderName}" papkasidagi ${count} ta savolni ham O'CHIRMOQCHIMISIZ?`)) return;
+  try{
+    const toDelete = questions2.filter(q=>(q.folder||q.tag||'') === folderName);
+    for(const q of toDelete){ await deleteDoc(doc(db,'questions2',q.id)); }
+    if(currentFolder2 === folderName) currentFolder2 = '';
+    await loadQuestions2();
+  } catch(err){ alert('Xatolik: '+err.message); }
+}
+
+// Bank 2 Bulk import
+window.openBulk2Import = function(){
+  $('bulkText2').value=''; $('bulkModal2Error').classList.remove('show'); $('bulkPreview2').textContent='';
+  $('bulkModal2Bg').classList.add('show');
+}
+window.closeBulk2Import = function(){ $('bulkModal2Bg').classList.remove('show'); }
+
+window.saveBulk2Import = async function(){
+  const raw = $('bulkText2').value;
+  const errEl = $('bulkModal2Error');
+  errEl.classList.remove('show');
+  const {parsed, errors} = parseBulkText(raw);
+  if(parsed.length===0){
+    errEl.textContent = "Hech qanday to'g'ri formatdagi savol topilmadi."; errEl.classList.add('show'); return;
+  }
+  try{
+    for(const q of parsed){
+      await addDoc(collection(db,'questions2'), {...q, createdAt: serverTimestamp()});
+    }
+    closeBulk2Import();
+    await loadQuestions2();
+    alert(`${parsed.length} ta savol Bank 2 ga qo'shildi!${errors.length ? ' ('+errors.length+' ta blok xato)' : ''}`);
+  } catch(err){
+    errEl.textContent = "Xatolik: " + err.message; errEl.classList.add('show');
+  }
+}
+$('bulkText2')?.addEventListener?.('input', ()=>{
+  const {parsed, errors} = parseBulkText($('bulkText2').value);
+  $('bulkPreview2').textContent = parsed.length ? `✓ ${parsed.length} ta savol aniqlandi` : '';
+});
+
+// Bank 2 Excel import
+window.openExcel2Import = function(){
+  $('excelModal2Error').classList.remove('show');
+  $('excelPreview2').textContent = '';
+  $('excelPreviewTable2').innerHTML = '';
+  $('excelFileInput2').value = '';
+  $('excelSaveBtn2').disabled = true;
+  excelParsedQuestions2 = [];
+  const folds = getFolders2();
+  const sel = $('excelFolder2Select');
+  if(sel) sel.innerHTML = '<option value="">Papkasiz</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+  $('excelModal2Bg').classList.add('show');
+  const zone = $('excelDropZone2');
+  zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('drag-over'); };
+  zone.ondragleave = () => zone.classList.remove('drag-over');
+  zone.ondrop = (e) => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if(file) processExcelFile2(file);
+  };
+}
+window.closeExcel2Import = function(){ $('excelModal2Bg').classList.remove('show'); }
+
+window.handleExcelFile2 = function(input){
+  if(input.files[0]) processExcelFile2(input.files[0]);
+}
+
+function processExcelFile2(file){
+  const errEl = $('excelModal2Error');
+  errEl.classList.remove('show');
+  $('excelPreview2').textContent = "Fayl o'qilmoqda...";
+  $('excelPreviewTable2').innerHTML = '';
+  $('excelSaveBtn2').disabled = true;
+  excelParsedQuestions2 = [];
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try{
+      if(typeof XLSX === 'undefined'){ throw new Error("Excel kutubxonasi yuklanmadi."); }
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+      if(rows.length === 0){ throw new Error("Fayl bo'sh"); }
+      const keys = Object.keys(rows[0]);
+      const findKey = (...variants) => keys.find(k=> variants.some(v=>k.trim().toLowerCase()===v.toLowerCase())) || null;
+      const savolKey = findKey('Savol','savol','Question','question','Text','text');
+      const aKey = findKey('A','a'); const bKey = findKey('B','b');
+      const cKey = findKey('C','c'); const dKey = findKey('D','d');
+      const javobKey = findKey('Javob','javob','Answer','answer',"To'g'ri",'togri');
+      if(!savolKey||!aKey||!bKey||!cKey||!dKey){ throw new Error(`Ustunlar topilmadi. Mavjud: ${keys.join(', ')}`); }
+      const parsed = [];
+      rows.forEach((row)=>{
+        const text = String(row[savolKey]||'').trim();
+        const A = String(row[aKey]||'').trim(), B = String(row[bKey]||'').trim();
+        const C = String(row[cKey]||'').trim(), D = String(row[dKey]||'').trim();
+        const javob = javobKey ? String(row[javobKey]||'').trim().toUpperCase() : 'A';
+        if(!text||!A||!B||!C||!D) return;
+        const correct = ['A','B','C','D'].includes(javob) ? javob : 'A';
+        parsed.push({text, options:{A,B,C,D}, correct});
+      });
+      excelParsedQuestions2 = parsed;
+      $('excelSaveBtn2').disabled = parsed.length === 0;
+      $('excelPreview2').textContent = `✓ ${parsed.length} ta savol aniqlandi`;
+      $('excelPreviewTable2').innerHTML = `<table style="width:100%;font-size:12.5px;border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:4px 8px;background:var(--bg);">Savol</th><th style="padding:4px 8px;background:var(--bg);">Javob</th></tr></thead><tbody>${parsed.slice(0,5).map(q=>`<tr><td style="padding:4px 8px;border-bottom:1px solid var(--line);">${escapeHtml(q.text.slice(0,60))}${q.text.length>60?'...':''}</td><td style="padding:4px 8px;border-bottom:1px solid var(--line);text-align:center;font-weight:700;">${q.correct}</td></tr>`).join('')}${parsed.length>5?`<tr><td colspan="2" style="padding:6px 8px;color:var(--ink-soft);text-align:center;">... va yana ${parsed.length-5} ta savol</td></tr>`:''}</tbody></table>`;
+    } catch(err){
+      $('excelModal2Error').textContent = 'Xatolik: ' + err.message;
+      $('excelModal2Error').classList.add('show');
+      $('excelPreview2').textContent = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+window.saveExcel2Import = async function(){
+  if(excelParsedQuestions2.length === 0) return;
+  const folder = $('excelFolder2Select').value;
+  const btn = $('excelSaveBtn2');
+  btn.disabled = true; btn.textContent = 'Yuklanmoqda...';
+  try{
+    let count = 0;
+    for(const q of excelParsedQuestions2){
+      await addDoc(collection(db,'questions2'), {
+        text: q.text, options: q.options, correct: q.correct,
+        folder: folder, tag: folder, createdAt: serverTimestamp()
+      });
+      count++;
+      btn.textContent = `Yuklanmoqda... ${count}/${excelParsedQuestions2.length}`;
+    }
+    closeExcel2Import();
+    await loadQuestions2();
+    alert(`${count} ta savol Bank 2 ga muvaffaqiyatli qo'shildi!`);
+  } catch(err){
+    $('excelModal2Error').textContent = 'Xatolik: ' + err.message;
+    $('excelModal2Error').classList.add('show');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Yuklash';
+  }
+}
+
 // ============================================================
 // ADMIN: ASSIGN TEST
 // ============================================================
 function populateAssignSelectors(){
-  $('assignStudentSelect').innerHTML = students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.username)})</option>`).join('') || '<option disabled>O\'quvchi yo\'q</option>';
+  $('assignStudentSelect').innerHTML = students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.username)})${s.group ? ' ['+s.group+']' : ''}</option>`).join('') || '<option disabled>O\'quvchi yo\'q</option>';
   refreshTagFilters();
   updateAssignCount();
+  updateGroupAssignCount();
+}
+
+window.switchAssignTab = function(tab){
+  $('assignTabIndividual').classList.toggle('active', tab==='individual');
+  $('assignTabGroup').classList.toggle('active', tab==='group');
+  $('assignIndividualPanel').style.display = tab==='individual' ? '' : 'none';
+  $('assignGroupPanel').style.display = tab==='group' ? '' : 'none';
+  if(tab==='group') updateGroupAssignCount();
+}
+
+window.updateGroupAssignCount = function(){
+  const group = $('assignGroupSelect')?.value || 'UZ';
+  const bank = $('assignGroupBankSelect')?.value || '1';
+  const groupMembers = students.filter(s=>s.group===group);
+  const infoEl = $('groupMembersInfo');
+  if(infoEl){
+    const flag = group==='RU' ? '🇷🇺' : '🇺🇿';
+    infoEl.innerHTML = `${flag} <strong>${group} guruhi:</strong> ${groupMembers.length} ta o'quvchi — ${groupMembers.map(s=>`<span style="background:var(--surface);padding:2px 8px;border-radius:5px;border:1px solid var(--line);font-size:12.5px;">${escapeHtml(s.name)}</span>`).join(' ')||'<em>Hali o\'quvchi yo\'q</em>'}`;
+  }
+  // Refresh folder dropdown based on bank
+  const folds = bank==='2' ? getFolders2() : getFolders();
+  const sel = $('assignGroupFolderSelect');
+  if(sel){
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Barcha papkalar (aralash)</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+    sel.value = folds.includes(cur) ? cur : '';
+  }
+  const folder = $('assignGroupFolderSelect')?.value || '';
+  const pool_src = bank==='2' ? questions2 : questions;
+  const pool = folder ? pool_src.filter(q=>(q.folder||q.tag||'')===folder) : pool_src;
+  const hint = $('assignGroupCountHint');
+  if(hint) hint.textContent = `Mavjud savollar: ${pool.length} ta (${bank==='2'?'Bank 2':'Bank 1'})`;
+  const inp = $('assignGroupQuestionCount');
+  if(inp && parseInt(inp.value) > pool.length) inp.value = pool.length || 1;
+}
+
+window.assignGroupTest = async function(){
+  const group = $('assignGroupSelect')?.value;
+  const bank = $('assignGroupBankSelect')?.value || '1';
+  const folder = $('assignGroupFolderSelect')?.value || '';
+  const count = parseInt($('assignGroupQuestionCount').value);
+  const duration = parseInt($('assignGroupDuration').value);
+  const msgEl = $('assignGroupMsg');
+  msgEl.style.color='var(--ink-soft)'; msgEl.textContent='';
+
+  if(!group){ msgEl.style.color='var(--bad)'; msgEl.textContent="Guruh tanlanmagan."; return; }
+  const groupMembers = students.filter(s=>s.group===group);
+  if(groupMembers.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent=`${group} guruhida o'quvchi yo'q.`; return; }
+  const pool_src = bank==='2' ? questions2 : questions;
+  const pool = folder ? pool_src.filter(q=>(q.folder||q.tag||'')===folder) : pool_src;
+  if(pool.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent=`${bank==='2'?'Bank 2':'Bank 1'} bo'sh.`; return; }
+  if(!count || count<1 || !duration || duration<1){ msgEl.style.color='var(--bad)'; msgEl.textContent="To'g'ri savol soni va vaqtni kiriting."; return; }
+
+  if(!confirm(`${group} guruhidagi ${groupMembers.length} ta o'quvchiga ${Math.min(count, pool.length)} ta savol, ${duration} daqiqalik test biriktiriladi (${bank==='2'?'Bank 2':'Bank 1'}). Davom etasizmi?`)) return;
+
+  msgEl.style.color='var(--ink-soft)'; msgEl.textContent='Biriktirilmoqda...';
+  const folderLabel = folder || 'Barcha papkalar';
+  let done = 0;
+
+  try{
+    for(const s of groupMembers){
+      const shuffled = [...pool].sort(()=>Math.random()-0.5);
+      const selected = shuffled.slice(0, Math.min(count, pool.length));
+      const questionIds = selected.map(q=>q.id);
+      await updateDoc(doc(db,'students',s.id), {
+        assignedTest: { questionIds, duration, folder: folderLabel, bank, assignedAt: new Date().toISOString() }
+      });
+      done++;
+      msgEl.textContent = `Biriktirilmoqda... ${done}/${groupMembers.length}`;
+    }
+    msgEl.style.color='var(--good)';
+    msgEl.textContent = `✓ ${group} guruhidagi ${done} ta o'quvchiga test biriktirildi! (${Math.min(count, pool.length)} ta savol, ${duration} daqiqa, ${bank==='2'?'Bank 2':'Bank 1'}, ${folderLabel})`;
+    await loadAdminData();
+  } catch(err){
+    msgEl.style.color='var(--bad)'; msgEl.textContent = "Xatolik: " + err.message;
+  }
 }
 
 window.updateAssignCount = function(){
+  const bank = $('assignBankSelect')?.value || '1';
   const folder = $('assignFolderSelect')?.value || '';
-  const pool = folder ? questions.filter(q=>(q.folder||q.tag||'')===folder) : questions;
-  $('assignCountHint').textContent = `Mavjud savollar: ${pool.length} ta`;
+  const pool_src = bank === '2' ? questions2 : questions;
+  const pool = folder ? pool_src.filter(q=>(q.folder||q.tag||'')===folder) : pool_src;
+  $('assignCountHint').textContent = `Mavjud savollar: ${pool.length} ta (${bank==='2'?'Bank 2':'Bank 1'})`;
   const input = $('assignQuestionCount');
   if(parseInt(input.value) > pool.length) input.value = pool.length || 1;
+  // Refresh folder dropdown based on bank
+  const folds = bank==='2' ? getFolders2() : getFolders();
+  const sel = $('assignFolderSelect');
+  if(sel){
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Barcha papkalar (aralash)</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+    sel.value = folds.includes(cur) ? cur : '';
+  }
 }
 
 window.assignTest = async function(){
   const studentId = $('assignStudentSelect').value;
+  const bank = $('assignBankSelect')?.value || '1';
   const folder = $('assignFolderSelect')?.value || '';
   const count = parseInt($('assignQuestionCount').value);
   const duration = parseInt($('assignDuration').value);
   const msgEl = $('assignMsg');
 
   if(!studentId){ msgEl.style.color='var(--bad)'; msgEl.textContent="O'quvchi tanlanmagan."; return; }
-  const pool = folder ? questions.filter(q=>(q.folder||q.tag||'')===folder) : questions;
-  if(pool.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent="Savollar banki bo'sh."; return; }
+  const pool_src = bank === '2' ? questions2 : questions;
+  const pool = folder ? pool_src.filter(q=>(q.folder||q.tag||'')===folder) : pool_src;
+  if(pool.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent=`${bank==='2'?'Bank 2':'Bank 1'} bo'sh.`; return; }
   if(!count || count<1 || !duration || duration<1){ msgEl.style.color='var(--bad)'; msgEl.textContent="To'g'ri savol soni va vaqtni kiriting."; return; }
 
   const shuffled = [...pool].sort(()=>Math.random()-0.5);
@@ -1392,10 +2004,10 @@ window.assignTest = async function(){
 
   try{
     await updateDoc(doc(db,'students',studentId), {
-      assignedTest: { questionIds, duration, folder: folderLabel, assignedAt: new Date().toISOString() }
+      assignedTest: { questionIds, duration, folder: folderLabel, bank, assignedAt: new Date().toISOString() }
     });
     msgEl.style.color='var(--good)';
-    msgEl.textContent = `✓ ${questionIds.length} ta savol, ${duration} daqiqalik test biriktirildi. (${folderLabel})`;
+    msgEl.textContent = `✓ ${questionIds.length} ta savol, ${duration} daqiqalik test biriktirildi. (${bank==='2'?'Bank 2':'Bank 1'}, ${folderLabel})`;
     await loadAdminData();
   } catch(err){
     msgEl.style.color='var(--bad)'; msgEl.textContent = "Xatolik: " + err.message;
@@ -1408,15 +2020,27 @@ window.assignTest = async function(){
 window.renderResults = function(){
   const tbody = $('resultsTbody');
   tbody.innerHTML = '';
-  $('resultsEmpty').classList.toggle('hidden', results.length>0);
-  results.forEach(r=>{
+  const groupFilter = $('resultsGroupFilter')?.value || '';
+  let filtered = results;
+  if(groupFilter){
+    filtered = results.filter(r=>{
+      const stu = students.find(s=>s.id===r.studentId);
+      return stu?.group === groupFilter;
+    });
+  }
+  $('resultsEmpty').classList.toggle('hidden', filtered.length>0);
+  filtered.forEach(r=>{
     const pct = Math.round((r.correct/r.total)*100);
     const pass = pct >= 60;
     const date = r.completedAt?.toDate ? r.completedAt.toDate().toLocaleString('uz-UZ') : '-';
     const hasDetail = Array.isArray(r.detail) && r.detail.length>0;
+    const stu = students.find(s=>s.id===r.studentId);
+    const grp = stu?.group || '';
+    const grpBadge = grp==='RU' ? `<span class="badge" style="background:#FEE2E2;color:#B91C1C;">🇷🇺 RU</span>` : grp==='UZ' ? `<span class="badge" style="background:#DBEAFE;color:#1D4ED8;">🇺🇿 UZ</span>` : `<span style="color:var(--ink-soft)">—</span>`;
     tbody.innerHTML += `
       <tr>
         <td><strong>${escapeHtml(r.studentName)}</strong></td>
+        <td>${grpBadge}</td>
         <td>${r.total}</td>
         <td>${r.correct}</td>
         <td>${pct}%</td>
@@ -1580,7 +2204,8 @@ window.deleteAllQuestions = async function(){
 
 window.startTest = async function(){
   const t = currentUser.assignedTest;
-  const qDocs = await Promise.all(t.questionIds.map(id => getDoc(doc(db,'questions',id))));
+  const bankCol = t.bank === '2' ? 'questions2' : 'questions';
+  const qDocs = await Promise.all(t.questionIds.map(id => getDoc(doc(db, bankCol, id))));
   let rawQ = qDocs.filter(d=>d.exists()).map(d=>({id:d.id, ...d.data()}));
 
   // Savollarni aralashtirish
