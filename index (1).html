@@ -1,0 +1,2039 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test Platforma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F6F5F2;
+    --surface: #FFFFFF;
+    --ink: #18162B;
+    --ink-soft: #5B5876;
+    --line: #E5E2DC;
+    --primary: #2E2A6B;
+    --primary-deep: #1E1B4B;
+    --accent: #E8A93A;
+    --accent-deep: #C9861F;
+    --good: #1F7A52;
+    --good-bg: #E7F5EE;
+    --bad: #B23A3A;
+    --bad-bg: #FBEAEA;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(24,22,43,.04), 0 8px 24px rgba(24,22,43,.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Manrope', sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.brand,.display{ font-family:'Sora', sans-serif; }
+  ::selection{ background: var(--accent); color:#fff; }
+
+  /* ---------- layout helpers ---------- */
+  .screen{ min-height:100vh; display:none; }
+  .screen.active{ display:block; }
+  .hidden{ display:none !important; }
+  button{ font-family:inherit; cursor:pointer; }
+  input{ font-family:inherit; }
+
+  /* ---------- LOGIN ---------- */
+  #loginScreen.active{ display:flex; }
+  .login-wrap{
+    width:100%; display:flex; min-height:100vh;
+  }
+  .login-side{
+    flex:1.1; background: radial-gradient(120% 140% at 15% 10%, var(--primary) 0%, var(--primary-deep) 55%, #100E2C 100%);
+    color:#fff; padding:64px 56px; display:flex; flex-direction:column; justify-content:space-between;
+    position:relative; overflow:hidden;
+  }
+  .login-side::after{
+    content:""; position:absolute; right:-120px; bottom:-120px; width:340px; height:340px;
+    border-radius:50%; background:radial-gradient(circle at 30% 30%, rgba(232,169,58,.35), transparent 70%);
+  }
+  .brand{ font-size:22px; font-weight:800; letter-spacing:.2px; display:flex; align-items:center; gap:10px; position:relative; z-index:1;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;background:var(--accent);
+    display:flex;align-items:center;justify-content:center; color:var(--primary-deep); font-weight:800;
+  }
+  .login-pitch{ position:relative; z-index:1; }
+  .login-pitch .eyebrow{ color:var(--accent); font-weight:700; font-size:13px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:14px;}
+  .login-pitch h1{ font-size:40px; line-height:1.15; margin:0 0 16px; font-weight:700; max-width:480px;}
+  .login-pitch p{ color:rgba(255,255,255,.75); font-size:16px; line-height:1.6; max-width:420px; margin:0;}
+  .login-foot{ position:relative; z-index:1; color:rgba(255,255,255,.45); font-size:13px;}
+
+  .login-form-side{
+    flex:1; display:flex; align-items:center; justify-content:center; padding:40px;
+    background:var(--bg);
+  }
+  .login-card{ width:100%; max-width:380px; }
+  .login-card h2{ font-size:26px; margin:0 0 6px; }
+  .login-card .sub{ color:var(--ink-soft); font-size:14.5px; margin:0 0 32px; }
+  .field{ margin-bottom:18px; }
+  .field label{ display:block; font-size:13px; font-weight:600; color:var(--ink-soft); margin-bottom:7px; }
+  .field input{
+    width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line);
+    background:#fff; font-size:15px; color:var(--ink); transition:border-color .15s, box-shadow .15s;
+  }
+  .field input:focus{ outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(46,42,107,.12); }
+  .btn{
+    border:none; border-radius:10px; padding:13px 20px; font-size:15px; font-weight:700;
+    transition:transform .08s ease, opacity .15s, box-shadow .15s;
+  }
+  .btn:active{ transform:scale(.98); }
+  .btn-primary{ background:var(--primary); color:#fff; width:100%; box-shadow:0 6px 16px rgba(46,42,107,.25); }
+  .btn-primary:hover{ background:var(--primary-deep); }
+  .btn-accent{ background:var(--accent); color:var(--primary-deep); }
+  .btn-accent:hover{ background:var(--accent-deep); }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); border:1.5px solid var(--line); }
+  .btn-ghost:hover{ border-color:var(--ink-soft); color:var(--ink); }
+  .btn-danger{ background:var(--bad-bg); color:var(--bad); }
+  .btn-danger:hover{ background:#f6d9d9; }
+  .btn-sm{ padding:8px 14px; font-size:13px; border-radius:8px; }
+  .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+  .login-error{
+    background:var(--bad-bg); color:var(--bad); padding:11px 14px; border-radius:9px;
+    font-size:13.5px; margin-bottom:16px; display:none; font-weight:600;
+  }
+  .login-error.show{ display:block; }
+
+  .role-toggle{ display:flex; gap:8px; margin-bottom:26px; background:#EFEDE7; padding:4px; border-radius:10px;}
+  .role-toggle button{
+    flex:1; padding:9px; border:none; border-radius:7px; background:transparent; color:var(--ink-soft);
+    font-weight:700; font-size:13.5px; transition:.15s;
+  }
+  .role-toggle button.active{ background:#fff; color:var(--primary); box-shadow:var(--shadow); }
+
+  /* ---------- APP SHELL (admin & student) ---------- */
+  .app-shell{ display:flex; min-height:100vh; }
+  .sidebar{
+    width:240px; background:var(--primary-deep); color:#fff; padding:28px 18px;
+    display:flex; flex-direction:column; flex-shrink:0;
+  }
+  .sidebar .brand{ margin-bottom:36px; padding:0 8px;}
+  .nav-item{
+    display:flex; align-items:center; gap:10px; padding:11px 12px; border-radius:9px;
+    color:rgba(255,255,255,.65); font-weight:600; font-size:14px; margin-bottom:4px; cursor:pointer;
+    border:none; background:transparent; width:100%; text-align:left;
+  }
+  .nav-item:hover{ background:rgba(255,255,255,.06); color:#fff; }
+  .nav-item.active{ background:rgba(232,169,58,.16); color:var(--accent); }
+  .sidebar-foot{ margin-top:auto; padding:0 8px; }
+  .who{ font-size:13px; color:rgba(255,255,255,.5); margin-bottom:10px; }
+  .who strong{ color:#fff; display:block; font-size:14px; }
+
+  .main{ flex:1; padding:36px 44px; max-width:100%; overflow-x:hidden; }
+  .main-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:14px;}
+  .main-head h1{ font-size:26px; margin:0; }
+  .main-head p{ color:var(--ink-soft); margin:4px 0 0; font-size:14.5px; }
+
+  .card{ background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--line); }
+  .pad{ padding:24px; }
+
+  .stat-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:28px;}
+  .stat-card{ padding:20px 22px; }
+  .stat-card .num{ font-family:'Sora'; font-size:30px; font-weight:700; color:var(--primary-deep); }
+  .stat-card .lbl{ font-size:13px; color:var(--ink-soft); font-weight:600; margin-top:2px;}
+
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th{ text-align:left; padding:12px 14px; color:var(--ink-soft); font-weight:700; font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; border-bottom:1.5px solid var(--line); }
+  td{ padding:13px 14px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  tr:last-child td{ border-bottom:none; }
+  .badge{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; }
+  .badge-good{ background:var(--good-bg); color:var(--good); }
+  .badge-bad{ background:var(--bad-bg); color:var(--bad); }
+  .badge-wait{ background:#FFF3DD; color:var(--accent-deep); }
+
+  .toolbar{ display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; align-items:center; }
+  .toolbar input, .toolbar select{
+    padding:10px 13px; border-radius:9px; border:1.5px solid var(--line); font-size:14px; background:#fff;
+  }
+  .toolbar input:focus, .toolbar select:focus{ outline:none; border-color:var(--primary); }
+  .search-box{ flex:1; min-width:180px; }
+
+  .modal-bg{
+    position:fixed; inset:0; background:rgba(20,18,40,.55); display:none; align-items:center; justify-content:center;
+    z-index:100; padding:20px;
+  }
+  .modal-bg.show{ display:flex; }
+  .modal{ background:#fff; border-radius:16px; width:100%; max-width:460px; padding:28px; max-height:88vh; overflow-y:auto; }
+  .modal h3{ margin:0 0 18px; font-size:19px; }
+  .modal-actions{ display:flex; gap:10px; margin-top:22px; }
+  .modal-actions .btn{ flex:1; }
+
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  @media (max-width:520px){ .grid-2{ grid-template-columns:1fr; } }
+
+  .empty-state{ text-align:center; padding:50px 20px; color:var(--ink-soft); }
+  .empty-state .ico{ font-size:34px; margin-bottom:10px; }
+
+  .icon-btn{ background:none; border:none; color:var(--ink-soft); padding:6px; border-radius:7px; font-size:15px; }
+  .icon-btn:hover{ background:var(--bg); color:var(--ink); }
+
+  /* ---------- STUDENT TEST TAKING ---------- */
+  .test-shell{ min-height:100vh; background:var(--bg); display:flex; flex-direction:column; }
+  .test-top{
+    background:var(--surface); border-bottom:1px solid var(--line); padding:14px 28px;
+    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:10;
+  }
+  .timer{
+    font-family:'Sora'; font-weight:700; font-size:20px; padding:8px 18px; border-radius:10px;
+    background:var(--primary-deep); color:#fff; letter-spacing:.03em; min-width:96px; text-align:center;
+  }
+  .timer.warn{ background:var(--bad); }
+  .test-body{ flex:1; max-width:760px; margin:0 auto; padding:36px 24px 60px; width:100%; }
+  .q-progress{ display:none; } .q-progress2{ font-size:13px; color:var(--ink-soft); font-weight:700; margin-bottom:10px; text-transform:uppercase; letter-spacing:.05em;}
+  .q-card{ background:var(--surface); border-radius:18px; box-shadow:var(--shadow); border:1px solid var(--line); padding:30px 30px 24px; margin-bottom:22px;}
+  .q-text{ font-size:18px; font-weight:600; line-height:1.5; margin-bottom:22px; }
+  .opt{
+    display:flex; align-items:flex-start; gap:13px; padding:14px 16px; border:1.5px solid var(--line);
+    border-radius:11px; margin-bottom:10px; cursor:pointer; transition:.12s; background:#fff;
+  }
+  .opt:hover{ border-color:var(--primary); background:#F8F7FF; }
+  .opt.selected{ border-color:var(--primary); background:#F0EEFC; }
+  .opt .letter{
+    width:26px; height:26px; border-radius:7px; background:var(--bg); border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; color:var(--ink-soft);
+  }
+  .opt.selected .letter{ background:var(--primary); border-color:var(--primary); color:#fff; }
+  .opt .opt-text{ font-size:15px; line-height:1.5; padding-top:2px; }
+  .qnav{
+    position:sticky; bottom:0; background:var(--surface); border-top:1px solid var(--line);
+    padding:16px 28px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .dotgrid{ display:none; }
+  .dot{ display:none; }
+
+  .result-wrap{ max-width:560px; margin:60px auto; padding:0 24px; text-align:center; }
+  .result-circle{
+    width:160px; height:160px; border-radius:50%; margin:0 auto 26px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; background:var(--surface); border:10px solid var(--good);
+    box-shadow:var(--shadow);
+  }
+  .result-circle.fail{ border-color:var(--bad); }
+  .result-circle .pct{ font-family:'Sora'; font-size:38px; font-weight:800; }
+  .result-circle .frac{ font-size:13px; color:var(--ink-soft); font-weight:700; }
+
+  /* --- papka tablari --- */
+  .folder-tab{
+    padding:8px 16px; border-radius:9px; border:1.5px solid var(--line); background:#fff;
+    font-weight:700; font-size:13.5px; color:var(--ink-soft); cursor:pointer; transition:.12s;
+    display:flex; align-items:center; gap:6px;
+  }
+  .folder-tab:hover{ border-color:var(--primary); color:var(--primary); }
+  .folder-tab.active{ background:var(--primary); border-color:var(--primary); color:#fff; }
+  .folder-tab .del-folder{
+    width:16px; height:16px; border-radius:4px; background:rgba(255,255,255,.25);
+    display:inline-flex; align-items:center; justify-content:center; font-size:10px;
+    margin-left:2px;
+  }
+  .folder-tab.active .del-folder:hover{ background:rgba(255,255,255,.4); }
+
+  /* --- Excel yuklash zona --- */
+  .excel-drop{
+    border:2px dashed var(--line); border-radius:14px; padding:30px 20px; text-align:center;
+    background:#fff; cursor:pointer; transition:.15s;
+  }
+  .excel-drop:hover, .excel-drop.drag-over{ border-color:var(--primary); background:#F8F7FF; }
+  .excel-drop .ico{ font-size:32px; margin-bottom:8px; }
+  .excel-drop p{ color:var(--ink-soft); font-size:14px; margin:0; }
+  .excel-drop strong{ color:var(--primary); }
+
+  @media (max-width: 880px){
+    .login-side{ display:none; }
+    .sidebar{ width:72px; padding:20px 10px; }
+    .sidebar .nav-item span.label{ display:none; }
+    .sidebar .brand span.label{ display:none; }
+    .sidebar-foot .who{ display:none; }
+    .main{ padding:24px 18px; }
+    .test-body{ padding:24px 14px 50px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================= LOGIN ======================= -->
+<div id="loginScreen" class="screen active">
+  <div class="login-wrap">
+    <div style="position:fixed;top:16px;right:16px;display:flex;gap:8px;z-index:999;">
+    <button onclick="setLang('uz')" id="loginLangUZ" style="padding:5px 12px;border:1.5px solid #4C46B0;border-radius:6px;background:#4C46B0;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">UZ</button>
+    <button onclick="setLang('ru')" id="loginLangRU" style="padding:5px 12px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#888;font-weight:700;font-size:12px;cursor:pointer;">RU</button>
+  </div>
+  <div class="login-side">
+      <div class="brand"><div class="brand-mark">T</div><span class="label">Test Platforma</span></div>
+      <div class="login-pitch">
+        <div class="eyebrow">Onlayn bilim sinovi</div>
+        <h1>Bilimingizni sinab ko'ring, natijangizni shu zahoti bilib oling.</h1>
+        <p>O'qituvchingiz tomonidan biriktirilgan test orqali tizimga kiring. Vaqt nazorati va aniq natijalar bilan.</p>
+      </div>
+      <div class="login-foot">© 2026 Test Platforma</div>
+    </div>
+    <div class="login-form-side">
+      <div class="login-card">
+        <div class="role-toggle">
+          <button id="tabStudent" class="active" onclick="switchRole('student')">O'quvchi</button>
+          <button id="tabAdmin" onclick="switchRole('admin')">Admin</button>
+        </div>
+        <h2 id="loginTitle">O'quvchi sifatida kirish</h2>
+        <p class="sub" id="loginSub">O'qituvchingiz bergan login va parolni kiriting.</p>
+        <div class="login-error" id="loginError"></div>
+        <form id="loginForm" onsubmit="return false;">
+          <div class="field">
+            <label>Login</label>
+            <input id="loginUsername" type="text" autocomplete="username" placeholder="masalan: ali_2025">
+          </div>
+          <div class="field">
+            <label>Parol</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" placeholder="••••••••">
+          </div>
+          <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">Kirish</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= ADMIN APP ======================= -->
+<div id="adminScreen" class="screen">
+  <div class="app-shell">
+    <div class="sidebar">
+      <div class="brand"><div class="brand-mark">T</div><span class="label">Test Platforma</span></div>
+      <button class="nav-item active" data-tab="dashboard" onclick="switchAdminTab('dashboard')">📊 <span class="label">Bosh sahifa</span></button>
+      <button class="nav-item" data-tab="students" onclick="switchAdminTab('students')">👥 <span class="label">O'quvchilar</span></button>
+      <button class="nav-item" data-tab="questions" onclick="switchAdminTab('questions')">📝 <span class="label">Savollar banki</span></button>
+      <button class="nav-item" data-tab="assign" onclick="switchAdminTab('assign')">🎯 <span class="label">Test biriktirish</span></button>
+      <button class="nav-item" data-tab="results" onclick="switchAdminTab('results')">🏆 <span class="label">Natijalar</span></button>
+      <button class="nav-item" data-tab="monitor" onclick="switchAdminTab('monitor')">👁 <span class="label">Jonli monitoring</span></button>
+      <div class="sidebar-foot">
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button onclick="setLang('uz')" id="adminLangUZ" style="flex:1;padding:5px;border:1.5px solid #4C46B0;border-radius:6px;background:#4C46B0;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">UZ</button>
+          <button onclick="setLang('ru')" id="adminLangRU" style="flex:1;padding:5px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#888;font-weight:700;font-size:12px;cursor:pointer;">RU</button>
+        </div>
+        <div class="who"><strong id="adminWhoName">Admin</strong>boshqaruvchi</div>
+        <button class="btn btn-ghost btn-sm" style="width:100%" onclick="logout()">Chiqish</button>
+      </div>
+    </div>
+    <div class="main">
+
+      <!-- DASHBOARD -->
+      <div id="admin-dashboard" class="admin-tab">
+        <div class="main-head">
+          <div><h1>Bosh sahifa</h1><p>Platformangiz holatiga umumiy nazar</p></div>
+        </div>
+        <div class="stat-grid">
+          <div class="card stat-card"><div class="num" id="statStudents">0</div><div class="lbl">O'quvchilar</div></div>
+          <div class="card stat-card"><div class="num" id="statQuestions">0</div><div class="lbl">Savollar banki</div></div>
+          <div class="card stat-card"><div class="num" id="statAssigned">0</div><div class="lbl">Biriktirilgan testlar</div></div>
+          <div class="card stat-card"><div class="num" id="statCompleted">0</div><div class="lbl">Tugatilgan testlar</div></div>
+        </div>
+        <div class="card pad">
+          <h3 style="margin-top:0">So'nggi natijalar</h3>
+          <table id="recentResultsTable"><thead><tr><th>O'quvchi</th><th>Natija</th><th>Sana</th></tr></thead><tbody></tbody></table>
+          <div id="recentResultsEmpty" class="empty-state hidden"><div class="ico">📭</div>Hali natijalar yo'q</div>
+        </div>
+      </div>
+
+      <!-- STUDENTS -->
+      <div id="admin-students" class="admin-tab hidden">
+        <div class="main-head">
+          <div><h1>O'quvchilar</h1><p>Qo'shing, login/parol bering yoki chiqarib yuboring</p></div>
+          <button class="btn btn-accent" onclick="openStudentModal()">+ O'quvchi qo'shish</button>
+        </div>
+        <div class="card pad">
+          <div class="toolbar">
+            <input class="search-box" id="studentSearch" placeholder="Ism yoki login bo'yicha qidirish..." oninput="renderStudents()">
+          </div>
+          <table>
+            <thead><tr><th>Ism familiya</th><th>Login</th><th>Parol</th><th>Guruh</th><th>Biriktirilgan test</th><th></th></tr></thead>
+            <tbody id="studentsTbody"></tbody>
+          </table>
+          <div id="studentsEmpty" class="empty-state hidden"><div class="ico">👥</div>Hali o'quvchi qo'shilmagan<br><br><button class="btn btn-accent btn-sm" onclick="openStudentModal()">Birinchi o'quvchini qo'shish</button></div>
+        </div>
+      </div>
+
+      <!-- QUESTIONS BANK -->
+      <div id="admin-questions" class="admin-tab hidden">
+        <div class="main-head">
+          <div><h1>Savollar banki</h1><p id="questionsCountText">Jami 0 ta savol</p></div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-ghost" onclick="openFolderModal()">📁 Papka yaratish</button>
+            <button class="btn btn-ghost" onclick="openExcelImport()">📊 Excel yuklash</button>
+            <button class="btn btn-ghost" onclick="openBulkImport()">📋 Ko'plab qo'shish</button>
+            <button class="btn btn-accent" onclick="openQuestionModal()">+ Savol qo'shish</button>
+            <button class="btn" style="background:#E24B4A;color:#fff;border-color:#E24B4A" onclick="deleteAllQuestions()">🗑️ Hammasini o'chirish</button>
+          </div>
+        </div>
+        <!-- Papkalar ro'yxati -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <button class="folder-tab active" data-folder="" onclick="selectFolder('')">📂 Barchasi</button>
+            <div id="folderTabs"></div>
+          </div>
+        </div>
+        <div class="card pad">
+          <div class="toolbar">
+            <input class="search-box" id="questionSearch" placeholder="Savol matni bo'yicha qidirish..." oninput="renderQuestions()">
+          </div>
+          <table>
+            <thead><tr><th style="width:45px">#</th><th>Savol</th><th>Papka</th><th>To'g'ri javob</th><th></th></tr></thead>
+            <tbody id="questionsTbody"></tbody>
+          </table>
+          <div id="questionsEmpty" class="empty-state hidden"><div class="ico">📝</div>Hali savol qo'shilmagan<br><br><button class="btn btn-accent btn-sm" onclick="openQuestionModal()">Birinchi savolni qo'shish</button></div>
+        </div>
+      </div>
+
+      <!-- ASSIGN TEST -->
+      <div id="admin-assign" class="admin-tab hidden">
+        <div class="main-head">
+          <div><h1>Test biriktirish</h1><p>O'quvchiga yoki guruhga papka va savollar sonini belgilang</p></div>
+        </div>
+
+        <!-- Tabs for individual vs group -->
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button id="assignTabIndividual" class="folder-tab active" onclick="switchAssignTab('individual')">👤 Alohida o'quvchi</button>
+          <button id="assignTabGroup" class="folder-tab" onclick="switchAssignTab('group')">👥 Guruhga biriktirish</button>
+        </div>
+
+        <!-- Individual assign -->
+        <div id="assignIndividualPanel" class="card pad" style="max-width:680px;">
+          <div class="field">
+            <label>O'quvchi</label>
+            <select id="assignStudentSelect"></select>
+          </div>
+          <div class="field">
+            <label>Papka (qaysi papkadan savol olinsin)</label>
+            <select id="assignFolderSelect" onchange="updateAssignCount()">
+              <option value="">Barcha papkalar (aralash)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nechta savol tasodifiy tanlansin</label>
+            <input type="number" id="assignQuestionCount" min="1" value="20" oninput="updateAssignCount()">
+            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:5px;" id="assignCountHint"></div>
+          </div>
+          <div class="field">
+            <label>Test vaqti (daqiqa)</label>
+            <input type="number" id="assignDuration" min="1" value="30">
+          </div>
+          <button class="btn btn-primary" onclick="assignTest()">Testni biriktirish</button>
+          <div id="assignMsg" style="margin-top:14px; font-size:13.5px; font-weight:600;"></div>
+        </div>
+
+        <!-- Group assign -->
+        <div id="assignGroupPanel" class="card pad" style="max-width:680px; display:none;">
+          <div style="background:#F0EEFC; border-radius:10px; padding:14px 16px; margin-bottom:18px; font-size:14px; color:#4C46B0; font-weight:600;">
+            🇷🇺 Rus guruhiga test biriktirish — bir bosimda barcha RU guruh o'quvchilariga test beriladi
+          </div>
+          <div class="field">
+            <label>Guruh tanlang</label>
+            <select id="assignGroupSelect" onchange="updateGroupAssignCount()" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+              <option value="UZ">🇺🇿 O'zbek guruhi (UZ)</option>
+              <option value="RU">🇷🇺 Rus guruhi (RU)</option>
+            </select>
+          </div>
+          <div id="groupMembersInfo" style="font-size:13.5px; color:var(--ink-soft); margin-bottom:14px; padding:10px 14px; background:var(--bg); border-radius:9px;"></div>
+          <div class="field">
+            <label>Papka (qaysi papkadan savol olinsin)</label>
+            <select id="assignGroupFolderSelect" onchange="updateGroupAssignCount()">
+              <option value="">Barcha papkalar (aralash)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nechta savol tasodifiy tanlansin</label>
+            <input type="number" id="assignGroupQuestionCount" min="1" value="20" oninput="updateGroupAssignCount()">
+            <div style="font-size:12.5px; color:var(--ink-soft); margin-top:5px;" id="assignGroupCountHint"></div>
+          </div>
+          <div class="field">
+            <label>Test vaqti (daqiqa)</label>
+            <input type="number" id="assignGroupDuration" min="1" value="30">
+          </div>
+          <button class="btn btn-primary" onclick="assignGroupTest()">Guruhga testni biriktirish</button>
+          <div id="assignGroupMsg" style="margin-top:14px; font-size:13.5px; font-weight:600;"></div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div id="admin-results" class="admin-tab hidden">
+        <div class="main-head">
+          <div><h1>Natijalar</h1><p>Barcha o'quvchilarning test natijalari</p></div>
+        </div>
+        <div class="card pad">
+          <div class="toolbar" style="margin-bottom:14px;">
+            <select id="resultsGroupFilter" onchange="renderResults()" style="padding:10px 13px; border-radius:9px; border:1.5px solid var(--line); font-size:14px; background:#fff;">
+              <option value="">Barcha guruhlar</option>
+              <option value="UZ">🇺🇿 UZ guruhi</option>
+              <option value="RU">🇷🇺 RU guruhi</option>
+            </select>
+          </div>
+          <table>
+            <thead><tr><th>O'quvchi</th><th>Guruh</th><th>Savollar soni</th><th>To'g'ri</th><th>Foiz</th><th>Holat</th><th>Sana</th><th></th></tr></thead>
+            <tbody id="resultsTbody"></tbody>
+          </table>
+          <div id="resultsEmpty" class="empty-state hidden"><div class="ico">🏆</div>Hali natijalar yo'q</div>
+        </div>
+      </div>
+
+      <!-- MONITORING -->
+      <div id="admin-monitor" class="admin-tab hidden">
+        <div class="main-head">
+          <div><h1>Jonli monitoring</h1><p>Hozir test yechayotgan o'quvchilar</p></div>
+          <button class="btn btn-ghost" onclick="refreshMonitor()">🔄 Yangilash</button>
+        </div>
+        <div class="card pad">
+          <table>
+            <thead><tr><th>O'quvchi</th><th>Boshlagan vaqt</th><th>Test holati</th><th>Papka</th></tr></thead>
+            <tbody id="monitorTbody"></tbody>
+          </table>
+          <div id="monitorEmpty" class="empty-state hidden"><div class="ico">👁</div>Hozir hech kim test yechmayapti</div>
+        </div>
+        <p style="color:var(--ink-soft); font-size:13px; margin-top:12px;">* Ma'lumot har 30 soniyada avtomatik yangilanadi. Qo'lda yangilash uchun "Yangilash" tugmasini bosing.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ======================= STUDENT APP ======================= -->
+<div id="studentScreen" class="screen">
+  <div class="app-shell">
+    <div class="sidebar">
+      <div class="brand"><div class="brand-mark">T</div><span class="label">Test Platforma</span></div>
+      <button class="nav-item active" data-tab="home" onclick="switchStudentTab('home')">🏠 <span class="label">Bosh sahifa</span></button>
+      <button class="nav-item" data-tab="history" onclick="switchStudentTab('history')">📜 <span class="label">Natijalarim</span></button>
+      <div class="sidebar-foot">
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <button onclick="setLang('uz')" id="stuLangUZ" style="flex:1;padding:5px;border:1.5px solid #4C46B0;border-radius:6px;background:#4C46B0;color:#fff;font-weight:700;font-size:12px;cursor:pointer;">UZ</button>
+          <button onclick="setLang('ru')" id="stuLangRU" style="flex:1;padding:5px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#888;font-weight:700;font-size:12px;cursor:pointer;">RU</button>
+        </div>
+        <div class="who"><strong id="studentWhoName">O'quvchi</strong>o'quvchi</div>
+        <button class="btn btn-ghost btn-sm" style="width:100%" onclick="logout()">Chiqish</button>
+      </div>
+    </div>
+    <div class="main">
+      <div id="student-home" class="student-tab">
+        <div class="main-head"><div><h1 id="studentGreeting">Xush kelibsiz!</h1><p>Sizga biriktirilgan testlar shu yerda</p></div></div>
+        <div id="studentTestCard"></div>
+      </div>
+      <div id="student-history" class="student-tab hidden">
+        <div class="main-head"><div><h1>Natijalarim</h1><p>Ilgari topshirgan testlaringiz</p></div></div>
+        <div class="card pad">
+          <table>
+            <thead><tr><th>Savollar soni</th><th>To'g'ri</th><th>Foiz</th><th>Sana</th></tr></thead>
+            <tbody id="studentHistoryTbody"></tbody>
+          </table>
+          <div id="studentHistoryEmpty" class="empty-state hidden"><div class="ico">📜</div>Hali test topshirmagansiz</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= TEST TAKING ======================= -->
+<div id="testScreen" class="screen">
+  <div class="test-shell">
+    <div style="height:4px;background:#E5E5E0;width:100%;position:relative;"><div id="testProgressBar" style="height:100%;background:var(--primary);transition:width 0.3s ease;width:0%"></div></div>
+    <div class="test-top" style="padding:0 24px;height:60px;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="brand"><div class="brand-mark">T</div><span class="label">Test</span></div>
+        <!-- Savol hisoblagichi -->
+        <div style="display:flex;align-items:center;gap:6px;background:#F0EEFC;border-radius:10px;padding:7px 14px;border:1.5px solid #C8C4F0;">
+          <span style="font-size:20px;">📝</span>
+          <span style="font-size:13px;color:#6b6b68;font-weight:600;" id="topLabel">Savol:</span>
+          <span id="answeredCount" style="font-weight:800;font-size:17px;color:#4C46B0;">0</span>
+          <span style="color:#C8C4F0;font-weight:700;">/</span>
+          <span id="totalCount" style="font-weight:700;font-size:17px;color:#888;">0</span>
+        </div>
+        <!-- Qolgan savol -->
+        <div style="display:flex;align-items:center;gap:6px;background:#FFF7ED;border-radius:10px;padding:7px 14px;border:1.5px solid #FDDCB0;">
+          <span style="font-size:20px;">⏳</span>
+          <span style="font-size:13px;color:#6b6b68;font-weight:600;" id="leftLabel">Qoldi:</span>
+          <span id="leftCount" style="font-weight:800;font-size:17px;color:#BA7517;">0</span>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button id="langUZ" onclick="setTestLang('uz')" style="padding:4px 10px;border:1.5px solid var(--primary);border-radius:6px;background:var(--primary);color:#fff;font-weight:700;font-size:12px;cursor:pointer;">UZ</button>
+        <button id="langRU" onclick="setTestLang('ru')" style="padding:4px 10px;border:1.5px solid var(--line);border-radius:6px;background:#fff;color:var(--ink-soft);font-weight:700;font-size:12px;cursor:pointer;">RU</button>
+        <!-- Vaqt -->
+        <div id="timerBox" style="display:flex;align-items:center;gap:6px;background:#FEF2F2;border-radius:10px;padding:7px 14px;border:1.5px solid #FCA5A5;">
+          <span style="font-size:18px;">⏱️</span>
+          <span id="testTimer" style="font-size:18px;font-weight:800;color:#DC2626;letter-spacing:1px;font-family:monospace;">00:00:00</span>
+        </div>
+      </div>
+    </div>
+    <div class="test-body">
+      <div class="q-progress" id="qProgress">1 / 20 savol</div>
+      <div class="q-card">
+        <div class="q-text" id="qText">Savol matni</div>
+        <div id="qOptions"></div>
+      </div>
+    </div>
+    <div class="qnav" style="justify-content:center;">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+        <button class="btn btn-ghost" onclick="prevQuestion()">◀ Oldingi</button>
+        <button class="btn btn-ghost" onclick="nextQuestion()">Keyingi ▶</button>
+        <button class="btn btn-ghost" onclick="skipQuestion()">O'tkazib yuborish ⏭</button>
+        <button class="btn btn-accent" onclick="finishTest()">Yakunlash ✓</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= RESULT ======================= -->
+<div id="resultScreen" class="screen">
+  <div style="min-height:100vh; background:var(--bg); display:flex; align-items:center; justify-content:center;">
+    <div class="result-wrap">
+      <div class="result-circle" id="resultCircle">
+        <div class="pct" id="resultPct">0%</div>
+        <div class="frac" id="resultFrac">0 / 0</div>
+      </div>
+      <h2 id="resultTitle" style="font-size:28px; margin-bottom:6px;">Test yakunlandi!</h2>
+      <div id="resultBadge" style="margin:12px auto; display:inline-block; padding:10px 28px; border-radius:999px; font-weight:800; font-size:18px;"></div>
+      <p style="color:var(--ink-soft); font-size:15px;" id="resultSub">Natijangiz saqlandi.</p>
+      <button class="btn btn-primary" style="max-width:260px; margin:24px auto 0; display:block;" onclick="backToStudentHome()">Bosh sahifaga qaytish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= MODALS ======================= -->
+
+<!-- Student modal -->
+<div class="modal-bg" id="studentModalBg">
+  <div class="modal">
+    <h3 id="studentModalTitle">O'quvchi qo'shish</h3>
+    <input type="hidden" id="studentEditId">
+    <div class="grid-2">
+      <div class="field" style="grid-column:1/-1"><label>Ism familiya</label><input id="studentName" placeholder="Ali Valiyev"></div>
+      <div class="field"><label>Login</label><input id="studentUsername" placeholder="ali_2025"></div>
+      <div class="field"><label>Parol</label><input id="studentPassword" placeholder="parol123"></div>
+    </div>
+    <div class="field">
+      <label>Guruh / Группа</label>
+      <select id="studentGroup" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+        <option value="">— Guruhsiz —</option>
+        <option value="UZ">🇺🇿 O'zbek guruhi (UZ)</option>
+        <option value="RU">🇷🇺 Rus guruhi (RU)</option>
+      </select>
+    </div>
+    <div class="login-error" id="studentModalError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeStudentModal()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveStudent()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Question modal -->
+<div class="modal-bg" id="questionModalBg">
+  <div class="modal" style="max-width:540px;">
+    <h3 id="questionModalTitle">Savol qo'shish</h3>
+    <input type="hidden" id="questionEditId">
+    <div class="field"><label>Savol matni</label><input id="qFormText" placeholder="Savolni shu yerga kiriting"></div>
+    <div class="field">
+      <label>Papka</label>
+      <select id="qFormFolder" style="width:100%; padding:13px 14px; border-radius:10px; border:1.5px solid var(--line); font-size:15px; color:var(--ink);">
+        <option value="">Papkasiz</option>
+      </select>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>A varianti</label><input id="qFormA" placeholder="A javob"></div>
+      <div class="field"><label>B varianti</label><input id="qFormB" placeholder="B javob"></div>
+      <div class="field"><label>C varianti</label><input id="qFormC" placeholder="C javob"></div>
+      <div class="field"><label>D varianti</label><input id="qFormD" placeholder="D javob"></div>
+    </div>
+    <div class="field">
+      <label>To'g'ri javob</label>
+      <select id="qFormCorrect">
+        <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+      </select>
+    </div>
+    <div class="login-error" id="questionModalError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeQuestionModal()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveQuestion()">Saqlash</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk import modal -->
+<div class="modal-bg" id="bulkModalBg">
+  <div class="modal" style="max-width:600px;">
+    <h3>Ko'plab savol qo'shish</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-top:-10px;">
+      Har bir savolni shu formatda, bo'sh qatordan keyin keyingisini yozing:<br>
+      <code style="background:var(--bg); padding:2px 6px; border-radius:5px; display:block; margin-top:8px; white-space:pre-line; font-size:12.5px;">Savol matni
+A) variant
+B) variant
+C) variant
+D) variant
+Javob: B
+Mavzu: Tarix (ixtiyoriy)</code>
+    </p>
+    <div class="field">
+      <textarea id="bulkText" rows="10" style="width:100%; padding:12px; border-radius:9px; border:1.5px solid var(--line); font-size:13.5px; font-family:monospace;" placeholder="Savollarni shu yerga joylashtiring..."></textarea>
+    </div>
+    <div class="login-error" id="bulkModalError"></div>
+    <div id="bulkPreview" style="font-size:13px; color:var(--good); font-weight:700; margin-top:6px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeBulkImport()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveBulkImport()">Hammasini qo'shish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Papka yaratish modal -->
+<div class="modal-bg" id="folderModalBg">
+  <div class="modal" style="max-width:400px;">
+    <h3>📁 Papka yaratish</h3>
+    <div class="field">
+      <label>Papka nomi</label>
+      <input id="folderNameInput" placeholder="masalan: Fundamental 1C, Soliq asoslari...">
+    </div>
+    <div class="login-error" id="folderModalError"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeFolderModal()">Bekor qilish</button>
+      <button class="btn btn-primary" onclick="saveFolder()">Yaratish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Excel yuklash modal -->
+<div class="modal-bg" id="excelModalBg">
+  <div class="modal" style="max-width:540px;">
+    <h3>📊 Excel orqali savollar yuklash</h3>
+    <p style="font-size:13.5px; color:var(--ink-soft); margin-top:-8px; margin-bottom:16px;">
+      Excel fayli <strong>Savol, A, B, C, D, Javob</strong> ustunlaridan iborat bo'lishi kerak. Javob ustunida A/B/C/D harflaridan biri yozilishi shart.
+    </p>
+    <div class="field">
+      <label>Papka tanlang (savollar qaysi papkaga qo'shilsin)</label>
+      <select id="excelFolderSelect">
+        <option value="">Papkasiz</option>
+      </select>
+    </div>
+    <div class="excel-drop" id="excelDropZone" onclick="$('excelFileInput').click()">
+      <div class="ico">📊</div>
+      <p><strong>Excel faylni shu yerga tashlang</strong> yoki bosib tanlang</p>
+      <p style="margin-top:6px; font-size:12.5px;">.xlsx yoki .xls formatida</p>
+    </div>
+    <input type="file" id="excelFileInput" accept=".xlsx,.xls" style="display:none" onchange="handleExcelFile(this)">
+    <div id="excelPreview" style="margin-top:14px; font-size:13.5px; font-weight:600; color:var(--good);"></div>
+    <div id="excelPreviewTable" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
+    <div class="login-error" id="excelModalError"></div>
+    <div class="modal-actions" style="margin-top:18px;">
+      <button class="btn btn-ghost" onclick="closeExcelImport()">Bekor qilish</button>
+      <button class="btn btn-primary" id="excelSaveBtn" disabled onclick="saveExcelImport()">Yuklash</button>
+    </div>
+  </div>
+</div>
+
+<!-- Result detail modal -->
+<div class="modal-bg" id="resultDetailModalBg">
+  <div class="modal" style="max-width:680px;">
+    <h3 id="resultDetailTitle">Natija tafsilotlari</h3>
+    <div id="resultDetailBody" style="max-height:60vh; overflow-y:auto;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeResultDetail()">Yopish</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ============================================================
+// FIREBASE CONFIG — sizning loyihangiz konfiguratsiyasi
+// ============================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc,
+  setDoc, query, where, serverTimestamp, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAerrakpvHMMau-Jp26GOMtRA7QWmnq4RM",
+  authDomain: "test-platforma-ef3f4.firebaseapp.com",
+  projectId: "test-platforma-ef3f4",
+  storageBucket: "test-platforma-ef3f4.firebasestorage.app",
+  messagingSenderId: "406730481640",
+  appId: "1:406730481640:web:0487840a608f10e9068e5d",
+  measurementId: "G-72BBK8H57"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ============================================================
+// SIMPLE AUTH (Firestore-based, login/parol — Firebase Auth emas)
+// Admin login: admin / sizning belgilagan parolingiz (pastda)
+// ============================================================
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "admin123"; // <-- buni o'zgartiring!
+
+let currentUser = null; // {type:'admin'} yoki {type:'student', id, name, username, ...}
+let students = [];
+let questions = [];
+let results = [];
+
+// ---------- helpers ----------
+const $ = (id) => document.getElementById(id);
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  $(id).classList.add('active');
+}
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+// ---------- ROLE TOGGLE ----------
+window.switchRole = function(role){
+  $('tabStudent').classList.toggle('active', role==='student');
+  $('tabAdmin').classList.toggle('active', role==='admin');
+  $('loginTitle').textContent = role==='student' ? "O'quvchi sifatida kirish" : "Admin sifatida kirish";
+  $('loginSub').textContent = role==='student' ? "O'qituvchingiz bergan login va parolni kiriting." : "Boshqaruv panelga kirish uchun login va parolni kiriting.";
+  $('loginForm').dataset.role = role;
+  $('loginError').classList.remove('show');
+}
+$('loginForm').dataset.role = 'student';
+
+// ---------- LOGIN ----------
+window.handleLogin = async function(){
+  const role = $('loginForm').dataset.role;
+  const u = $('loginUsername').value.trim();
+  const p = $('loginPassword').value;
+  $('loginError').classList.remove('show');
+
+  if(!u || !p){
+    $('loginError').textContent = "Login va parolni kiriting.";
+    $('loginError').classList.add('show');
+    return;
+  }
+
+  $('loginBtn').disabled = true; $('loginBtn').textContent = "Kirilmoqda...";
+
+  try{
+    if(role === 'admin'){
+      if(u === ADMIN_USERNAME && p === ADMIN_PASSWORD){
+        currentUser = {type:'admin'};
+        await loadAdminData();
+        $('adminWhoName').textContent = 'Admin';
+        showScreen('adminScreen');
+        saveSession();
+      } else {
+        throw new Error("Login yoki parol noto'g'ri.");
+      }
+    } else {
+      // student login: Firestore'dan username+password mosligini tekshiramiz
+      const snap = await getDocs(query(collection(db,'students'), where('username','==', u)));
+      let found = null;
+      snap.forEach(d => { const data = d.data(); if(data.password === p) found = {id:d.id, ...data}; });
+      if(!found){
+        throw new Error("Login yoki parol noto'g'ri.");
+      }
+      currentUser = {type:'student', ...found};
+      $('studentWhoName').textContent = found.name;
+      $('studentGreeting').textContent = `Xush kelibsiz, ${found.name.split(' ')[0]}!`;
+      await loadStudentHome();
+      showScreen('studentScreen');
+      saveSession();
+    }
+  } catch(err){
+    $('loginError').textContent = err.message || "Xatolik yuz berdi.";
+    $('loginError').classList.add('show');
+  } finally {
+    $('loginBtn').disabled = false; $('loginBtn').textContent = "Kirish";
+  }
+}
+
+window.logout = function(){
+  currentUser = null;
+  localStorage.removeItem('tp_session'); localStorage.removeItem('tp_teststate');
+  $('loginUsername').value=''; $('loginPassword').value='';
+  showScreen('loginScreen');
+}
+
+function saveSession(){
+  if(currentUser) localStorage.setItem('tp_session', JSON.stringify(currentUser));
+}
+
+function saveTestState(){
+  // Test davom etayotganda ham holatni saqlaymiz
+  if(activeTest && activeTest.questions.length > 0){
+    const state = {
+      questions: activeTest.questions,
+      answers: activeTest.answers,
+      current: activeTest.current,
+      timeLeft: activeTest.timeLeft
+    };
+    localStorage.setItem('tp_teststate', JSON.stringify(state));
+  }
+}
+
+async function restoreSession(){
+  const saved = localStorage.getItem('tp_session');
+  if(!saved) return false;
+  try{
+    const user = JSON.parse(saved);
+    if(user.type==='admin'){
+      currentUser=user;
+      await loadAdminData();
+      $('adminWhoName').textContent='Admin';
+      showScreen('adminScreen');
+      return true;
+    } else if(user.type==='student'&&user.id){
+      const sDoc=await getDoc(doc(db,'students',user.id));
+      if(sDoc.exists()){
+        currentUser={id:user.id,...sDoc.data()};
+        $('studentWhoName').textContent=currentUser.name;
+        $('studentGreeting').textContent="Xush kelibsiz, "+currentUser.name.split(' ')[0]+"!";
+
+        // Test davom etayotgan bo'lsa — holatni tiklaymiz
+        const savedTest = localStorage.getItem('tp_teststate');
+        if(savedTest){
+          try{
+            const state = JSON.parse(savedTest);
+            if(state.questions && state.questions.length > 0 && state.timeLeft > 0){
+              activeTest.questions = state.questions;
+              activeTest.answers = state.answers || {};
+              activeTest.current = state.current || 0;
+              activeTest.timeLeft = state.timeLeft;
+              showScreen('testScreen');
+              updateTimerDisplay();
+              renderQuestion();
+              renderDots();
+              updateAnsweredCount();
+              startTimer();
+              return true;
+            }
+          }catch(e2){ localStorage.removeItem('tp_teststate'); }
+        }
+
+        await loadStudentHome();
+        showScreen('studentScreen');
+        return true;
+      }
+    }
+  }catch(e){}
+  localStorage.removeItem('tp_session');
+  return false;
+}
+restoreSession();
+
+// ============================================================
+// ADMIN: DATA LOADING
+// ============================================================
+async function loadAdminData(){
+  const [stuSnap, qSnap, rSnap] = await Promise.all([
+    getDocs(collection(db,'students')),
+    getDocs(collection(db,'questions')),
+    getDocs(query(collection(db,'results'), orderBy('completedAt','desc')))
+  ]);
+  students = stuSnap.docs.map(d=>({id:d.id, ...d.data()}));
+  questions = qSnap.docs.map(d=>({id:d.id, ...d.data()}));
+  results = rSnap.docs.map(d=>({id:d.id, ...d.data()}));
+
+  renderDashboard();
+  renderStudents();
+  renderQuestions();
+  populateAssignSelectors();
+  renderResults();
+}
+
+function renderDashboard(){
+  $('statStudents').textContent = students.length;
+  $('statQuestions').textContent = questions.length;
+  $('statAssigned').textContent = students.filter(s=>s.assignedTest).length;
+  $('statCompleted').textContent = results.length;
+
+  const tbody = $('recentResultsTable').querySelector('tbody');
+  tbody.innerHTML = '';
+  const recent = results.slice(0,5);
+  $('recentResultsEmpty').classList.toggle('hidden', recent.length>0);
+  recent.forEach(r=>{
+    const pct = Math.round((r.correct/r.total)*100);
+    const date = r.completedAt?.toDate ? r.completedAt.toDate().toLocaleDateString('uz-UZ') : '-';
+    tbody.innerHTML += `<tr><td>${escapeHtml(r.studentName||'-')}</td><td>${r.correct}/${r.total} (${pct}%)</td><td>${date}</td></tr>`;
+  });
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ---------- admin tab switching ----------
+window.switchAdminTab = function(tab){
+  document.querySelectorAll('#adminScreen .nav-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.admin-tab').forEach(t=>t.classList.add('hidden'));
+  $('admin-'+tab).classList.remove('hidden');
+}
+
+// ============================================================
+// ADMIN: STUDENTS CRUD
+// ============================================================
+window.openStudentModal = function(editId){
+  $('studentModalError').classList.remove('show');
+  if(editId){
+    const s = students.find(x=>x.id===editId);
+    $('studentModalTitle').textContent = "O'quvchini tahrirlash";
+    $('studentEditId').value = editId;
+    $('studentName').value = s.name;
+    $('studentUsername').value = s.username;
+    $('studentPassword').value = s.password;
+    if($('studentGroup')) $('studentGroup').value = s.group || '';
+  } else {
+    $('studentModalTitle').textContent = "O'quvchi qo'shish";
+    $('studentEditId').value = '';
+    $('studentName').value = ''; $('studentUsername').value=''; $('studentPassword').value='';
+    if($('studentGroup')) $('studentGroup').value = '';
+  }
+  $('studentModalBg').classList.add('show');
+}
+window.closeStudentModal = function(){ $('studentModalBg').classList.remove('show'); }
+
+window.saveStudent = async function(){
+  const editId = $('studentEditId').value;
+  const name = $('studentName').value.trim();
+  const username = $('studentUsername').value.trim();
+  const password = $('studentPassword').value;
+  const group = $('studentGroup')?.value || '';
+  const errEl = $('studentModalError');
+  errEl.classList.remove('show');
+
+  if(!name || !username || !password){
+    errEl.textContent = "Barcha maydonlarni to'ldiring."; errEl.classList.add('show'); return;
+  }
+  const dupe = students.find(s => s.username===username && s.id!==editId);
+  if(dupe){
+    errEl.textContent = "Bu login band. Boshqa login tanlang."; errEl.classList.add('show'); return;
+  }
+
+  try{
+    if(editId){
+      await updateDoc(doc(db,'students',editId), {name, username, password, group});
+    } else {
+      await addDoc(collection(db,'students'), {name, username, password, group, assignedTest:null, createdAt: serverTimestamp()});
+    }
+    closeStudentModal();
+    await loadAdminData();
+  } catch(err){
+    errEl.textContent = "Xatolik: " + err.message; errEl.classList.add('show');
+  }
+}
+
+window.deleteStudent = async function(id){
+  if(!confirm("Bu o'quvchini o'chirmoqchimisiz? Bu amalni bekor qilib bo'lmaydi.")) return;
+  await deleteDoc(doc(db,'students',id));
+  await loadAdminData();
+}
+
+window.renderStudents = function(){
+  const search = ($('studentSearch')?.value || '').toLowerCase();
+  const tbody = $('studentsTbody');
+  tbody.innerHTML = '';
+  const filtered = students.filter(s => s.name.toLowerCase().includes(search) || s.username.toLowerCase().includes(search));
+  $('studentsEmpty').classList.toggle('hidden', students.length>0);
+  filtered.forEach(s=>{
+    const assignedLabel = s.assignedTest ? `<span class="badge badge-good">Biriktirilgan (${s.assignedTest.questionIds.length} ta, ${s.assignedTest.duration} daq)</span>` : `<span class="badge badge-wait">Yo'q</span>`;
+    const groupBadge = s.group === 'RU' ? `<span class="badge" style="background:#FEE2E2;color:#B91C1C;">🇷🇺 RU</span>` : s.group === 'UZ' ? `<span class="badge" style="background:#DBEAFE;color:#1D4ED8;">🇺🇿 UZ</span>` : `<span style="color:var(--ink-soft)">—</span>`;
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${escapeHtml(s.name)}</strong></td>
+        <td>${escapeHtml(s.username)}</td>
+        <td><span style="font-family:monospace; color:var(--ink-soft)">${escapeHtml(s.password)}</span></td>
+        <td>${groupBadge}</td>
+        <td>${assignedLabel}</td>
+        <td style="white-space:nowrap;">
+          <button class="icon-btn" onclick="openStudentModal('${s.id}')" title="Tahrirlash">✏️</button>
+          <button class="icon-btn" onclick="deleteStudent('${s.id}')" title="O'chirish">🗑️</button>
+        </td>
+      </tr>`;
+  });
+}
+
+// ============================================================
+// ADMIN: QUESTIONS CRUD
+// ============================================================
+let currentFolder = ''; // joriy tanlangan papka
+let folders = []; // papkalar ro'yxati
+
+function getFolders(){
+  return [...new Set(questions.map(q=>q.folder||q.tag||'').filter(Boolean))].sort();
+}
+
+function refreshFolderTabs(){
+  const folds = getFolders();
+  const tabsEl = $('folderTabs');
+  if(!tabsEl) return;
+  tabsEl.innerHTML = folds.map(f=>`
+    <button class="folder-tab ${currentFolder===f?'active':''}" data-folder="${escapeHtml(f)}" onclick="selectFolder('${escapeHtml(f)}')">
+      📁 ${escapeHtml(f)}
+      <span class="del-folder" onclick="event.stopPropagation(); deleteFolder('${escapeHtml(f)}')" title="Papkani o'chirish">✕</span>
+    </button>`).join('');
+  // Barchasi tugmasi
+  const allBtn = document.querySelector('.folder-tab[data-folder=""]');
+  if(allBtn) allBtn.classList.toggle('active', currentFolder==='');
+}
+
+function refreshAssignFolderSelect(){
+  const folds = getFolders();
+  const sel = $('assignFolderSelect');
+  if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Barcha papkalar (aralash)</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+  sel.value = cur;
+}
+
+function refreshExcelFolderSelect(){
+  const folds = getFolders();
+  const sel = $('excelFolderSelect');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">Papkasiz</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+}
+
+window.selectFolder = function(folder){
+  currentFolder = folder;
+  refreshFolderTabs();
+  renderQuestions();
+}
+
+// Papka yaratish
+window.openFolderModal = function(){
+  $('folderNameInput').value = '';
+  $('folderModalError').classList.remove('show');
+  $('folderModalBg').classList.add('show');
+}
+window.closeFolderModal = function(){ $('folderModalBg').classList.remove('show'); }
+window.saveFolder = function(){
+  const name = $('folderNameInput').value.trim();
+  if(!name){ $('folderModalError').textContent='Papka nomini kiriting'; $('folderModalError').classList.add('show'); return; }
+  if(getFolders().includes(name)){ $('folderModalError').textContent='Bu nomli papka allaqachon bor'; $('folderModalError').classList.add('show'); return; }
+  closeFolderModal();
+  // Papkani yaratish uchun bitta savol qo'shish shart emas — papka faqat savollar orqali mavjud bo'ladi
+  // Shuning uchun savollar qo'shish formasini ochib, papkani tanlab qo'yamiz
+  openQuestionModal(null, name);
+  alert(`"${name}" papkasi uchun birinchi savolni qo'shing. Papka avtomatik yaratiladi.`);
+}
+
+window.deleteFolder = async function(folderName){
+  const count = questions.filter(q=>(q.folder||q.tag||'')=== folderName).length;
+  if(!confirm(`"${folderName}" papkasidagi ${count} ta savolni ham O'CHIRMOQCHIMISIZ?
+
+Bu amalni bekor qilib bo'lmaydi!`)) return;
+  try{
+    const toDelete = questions.filter(q=>(q.folder||q.tag||'') === folderName);
+    for(const q of toDelete){
+      await deleteDoc(doc(db,'questions',q.id));
+    }
+    if(currentFolder === folderName) currentFolder = '';
+    await loadAdminData();
+  } catch(err){ alert('Xatolik: '+err.message); }
+}
+
+// Excel yuklash
+let excelParsedQuestions = [];
+
+window.openExcelImport = function(){
+  $('excelModalError').classList.remove('show');
+  $('excelPreview').textContent = '';
+  $('excelPreviewTable').innerHTML = '';
+  $('excelFileInput').value = '';
+  $('excelSaveBtn').disabled = true;
+  excelParsedQuestions = [];
+  refreshExcelFolderSelect();
+  $('excelModalBg').classList.add('show');
+
+  // Drag and drop
+  const zone = $('excelDropZone');
+  zone.ondragover = (e) => { e.preventDefault(); zone.classList.add('drag-over'); };
+  zone.ondragleave = () => zone.classList.remove('drag-over');
+  zone.ondrop = (e) => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if(file) processExcelFile(file);
+  };
+}
+window.closeExcelImport = function(){ $('excelModalBg').classList.remove('show'); }
+
+window.handleExcelFile = function(input){
+  if(input.files[0]) processExcelFile(input.files[0]);
+}
+
+function processExcelFile(file){
+  const errEl = $('excelModalError');
+  errEl.classList.remove('show');
+  $('excelPreview').textContent = "Fayl o'qilmoqda...";
+  $('excelPreviewTable').innerHTML = '';
+  $('excelSaveBtn').disabled = true;
+  excelParsedQuestions = [];
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try{
+      // SheetJS kutubxonasini CDN orqali yuklaymiz
+      if(typeof XLSX === 'undefined'){
+        errEl.textContent = "Excel kutubxonasi yuklanmadi. Sahifani yanglab ko'ring.";
+        errEl.classList.add('show');
+        $('excelPreview').textContent = '';
+        return;
+      }
+      const wb = XLSX.read(e.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+
+      if(rows.length === 0){ throw new Error("Fayl bo'sh yoki noto'g'ri format"); }
+
+      // Ustunlarni aniqlash (turli nomlar bo'lishi mumkin)
+      const keys = Object.keys(rows[0]);
+      const findKey = (...variants) => keys.find(k=> variants.some(v=>k.trim().toLowerCase()===v.toLowerCase())) || null;
+
+      const savolKey = findKey('Savol','savol','Question','question','Вопрос','Text','text');
+      const aKey = findKey('A','a','A variantи','A varianti','Вариант A');
+      const bKey = findKey('B','b','B varianti','Вариант B');
+      const cKey = findKey('C','c','C varianti','Вариант C');
+      const dKey = findKey('D','d','D varianti','Вариант D');
+      const javobKey = findKey('Javob','javob','Answer','answer','\u041e\u0442\u0432\u0435\u0442','Togri',"To'g'ri",'togri');
+
+      if(!savolKey || !aKey || !bKey || !cKey || !dKey){
+        throw new Error(`Ustunlar topilmadi. Falingizda: ${keys.join(', ')}. Savol, A, B, C, D ustunlari bo'lishi kerak.`);
+      }
+
+      const parsed = [];
+      const errors = [];
+      rows.forEach((row, i)=>{
+        const text = String(row[savolKey]||'').trim();
+        const A = String(row[aKey]||'').trim();
+        const B = String(row[bKey]||'').trim();
+        const C = String(row[cKey]||'').trim();
+        const D = String(row[dKey]||'').trim();
+        const javob = javobKey ? String(row[javobKey]||'').trim().toUpperCase() : 'A';
+
+        if(!text || !A || !B || !C || !D){ errors.push(i+1); return; }
+        const correct = ['A','B','C','D'].includes(javob) ? javob : 'A';
+        parsed.push({text, options:{A,B,C,D}, correct});
+      });
+
+      excelParsedQuestions = parsed;
+      $('excelSaveBtn').disabled = parsed.length === 0;
+
+      // Preview
+      $('excelPreview').textContent = `✓ ${parsed.length} ta savol aniqlandi${errors.length ? ` (${errors.length} ta qator oʼqilmadi)` : ''}${!javobKey ? ' · ⚠️ Javob ustuni topilmadi, barcha savollarga A qoyildi' : ''}`;
+
+      const previewHtml = `<table style="width:100%; font-size:12.5px; border-collapse:collapse;">
+        <thead><tr><th style="text-align:left; padding:4px 8px; background:var(--bg);">Savol</th><th style="padding:4px 8px; background:var(--bg);">Javob</th></tr></thead>
+        <tbody>${parsed.slice(0,5).map(q=>`<tr><td style="padding:4px 8px; border-bottom:1px solid var(--line);">${escapeHtml(q.text.slice(0,60))}${q.text.length>60?'...':''}</td><td style="padding:4px 8px; border-bottom:1px solid var(--line); text-align:center; font-weight:700;">${q.correct}</td></tr>`).join('')}
+        ${parsed.length>5?`<tr><td colspan="2" style="padding:6px 8px; color:var(--ink-soft); text-align:center;">... va yana ${parsed.length-5} ta savol</td></tr>`:''}
+        </tbody></table>`;
+      $('excelPreviewTable').innerHTML = previewHtml;
+    } catch(err){
+      $('excelModalError').textContent = 'Xatolik: ' + err.message;
+      $('excelModalError').classList.add('show');
+      $('excelPreview').textContent = '';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+window.saveExcelImport = async function(){
+  if(excelParsedQuestions.length === 0) return;
+  const folder = $('excelFolderSelect').value;
+  const btn = $('excelSaveBtn');
+  btn.disabled = true; btn.textContent = 'Yuklanmoqda...';
+  $('excelModalError').classList.remove('show');
+
+  try{
+    let count = 0;
+    for(const q of excelParsedQuestions){
+      await addDoc(collection(db,'questions'), {
+        text: q.text, options: q.options, correct: q.correct,
+        folder: folder, tag: folder,
+        createdAt: serverTimestamp()
+      });
+      count++;
+      btn.textContent = `Yuklanmoqda... ${count}/${excelParsedQuestions.length}`;
+    }
+    closeExcelImport();
+    await loadAdminData();
+    alert(`${count} ta savol muvaffaqiyatli qo'shildi!${folder ? ' Papka: '+folder : ''}`);
+  } catch(err){
+    $('excelModalError').textContent = 'Xatolik: ' + err.message;
+    $('excelModalError').classList.add('show');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Yuklash';
+  }
+}
+
+function refreshTagFilters(){
+  refreshFolderTabs();
+  refreshAssignFolderSelect();
+  refreshExcelFolderSelect();
+}
+
+window.openQuestionModal = function(editId, defaultFolder){
+  $('questionModalError').classList.remove('show');
+  // papka select yangilash
+  const folds = getFolders();
+  const foldSel = $('qFormFolder');
+  if(foldSel){
+    foldSel.innerHTML = '<option value="">Papkasiz</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+  }
+  if(editId){
+    const q = questions.find(x=>x.id===editId);
+    $('questionModalTitle').textContent = "Savolni tahrirlash";
+    $('questionEditId').value = editId;
+    $('qFormText').value = q.text;
+    if(foldSel) foldSel.value = q.folder || q.tag || '';
+    $('qFormA').value = q.options.A; $('qFormB').value = q.options.B;
+    $('qFormC').value = q.options.C; $('qFormD').value = q.options.D;
+    $('qFormCorrect').value = q.correct;
+  } else {
+    $('questionModalTitle').textContent = "Savol qo'shish";
+    $('questionEditId').value = '';
+    ['qFormText','qFormA','qFormB','qFormC','qFormD'].forEach(id=>$(id).value='');
+    $('qFormCorrect').value = 'A';
+    if(foldSel) foldSel.value = defaultFolder || currentFolder || '';
+  }
+  $('questionModalBg').classList.add('show');
+}
+window.closeQuestionModal = function(){ $('questionModalBg').classList.remove('show'); }
+
+window.saveQuestion = async function(){
+  const editId = $('questionEditId').value;
+  const text = $('qFormText').value.trim();
+  const A=$('qFormA').value.trim(), B=$('qFormB').value.trim(), C=$('qFormC').value.trim(), D=$('qFormD').value.trim();
+  const correct = $('qFormCorrect').value;
+  const errEl = $('questionModalError');
+  errEl.classList.remove('show');
+
+  if(!text || !A || !B || !C || !D){
+    errEl.textContent = "Savol va barcha 4 ta variantni to'ldiring."; errEl.classList.add('show'); return;
+  }
+
+  const folder = $('qFormFolder')?.value || '';
+  const payload = {text, tag:folder, folder, options:{A,B,C,D}, correct};
+  try{
+    if(editId){
+      await updateDoc(doc(db,'questions',editId), payload);
+    } else {
+      await addDoc(collection(db,'questions'), {...payload, createdAt: serverTimestamp()});
+    }
+    closeQuestionModal();
+    await loadAdminData();
+  } catch(err){
+    errEl.textContent = "Xatolik: " + err.message; errEl.classList.add('show');
+  }
+}
+
+window.deleteQuestion = async function(id){
+  if(!confirm("Bu savolni o'chirmoqchimisiz?")) return;
+  await deleteDoc(doc(db,'questions',id));
+  await loadAdminData();
+}
+
+window.renderQuestions = function(){
+  refreshTagFilters();
+  const search = ($('questionSearch')?.value || '').toLowerCase();
+  const tbody = $('questionsTbody');
+  tbody.innerHTML = '';
+  let filtered = questions.filter(q => q.text.toLowerCase().includes(search));
+  // papka filtri
+  if(currentFolder) filtered = filtered.filter(q => (q.folder||q.tag||'') === currentFolder);
+  const folderCount = currentFolder ? filtered.length : questions.length;
+  $('questionsCountText').textContent = currentFolder
+    ? `"${currentFolder}" papkasida ${filtered.length} ta savol (jami: ${questions.length})`
+    : `Jami ${questions.length} ta savol`;
+  $('questionsEmpty').classList.toggle('hidden', questions.length>0);
+  filtered.forEach((q,i)=>{
+    const qFolder = q.folder || q.tag || '';
+    tbody.innerHTML += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${escapeHtml(q.text).slice(0,70)}${q.text.length>70?'…':''}</td>
+        <td>${qFolder ? `<span class="badge badge-wait">📁 ${escapeHtml(qFolder)}</span>` : '<span style="color:var(--ink-soft)">—</span>'}</td>
+        <td><span class="badge badge-good">${q.correct}</span></td>
+        <td style="white-space:nowrap;">
+          <button class="icon-btn" onclick="openQuestionModal('${q.id}')" title="Tahrirlash">✏️</button>
+          <button class="icon-btn" onclick="deleteQuestion('${q.id}')" title="O'chirish">🗑️</button>
+        </td>
+      </tr>`;
+  });
+}
+
+// ---------- bulk import ----------
+window.openBulkImport = function(){
+  $('bulkText').value=''; $('bulkModalError').classList.remove('show'); $('bulkPreview').textContent='';
+  $('bulkModalBg').classList.add('show');
+}
+window.closeBulkImport = function(){ $('bulkModalBg').classList.remove('show'); }
+
+function parseBulkText(raw){
+  const blocks = raw.split(/\n\s*\n/).map(b=>b.trim()).filter(Boolean);
+  const parsed = [];
+  const errors = [];
+  blocks.forEach((block, idx)=>{
+    const lines = block.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(lines.length < 6){ errors.push(`Blok ${idx+1}: yetarli qator yo'q`); return; }
+    const text = lines[0];
+    const opts = {};
+    let correct = null, tag = '';
+    lines.slice(1).forEach(line=>{
+      const m = line.match(/^([A-D])\)\s*(.+)$/i);
+      if(m){ opts[m[1].toUpperCase()] = m[2].trim(); return; }
+      const j = line.match(/^Javob:\s*([A-D])/i);
+      if(j){ correct = j[1].toUpperCase(); return; }
+      const t = line.match(/^Mavzu:\s*(.+)$/i);
+      if(t){ tag = t[1].trim(); return; }
+    });
+    if(!opts.A||!opts.B||!opts.C||!opts.D||!correct){
+      errors.push(`Blok ${idx+1}: format noto'g'ri (variant yoki javob yetishmayapti)`); return;
+    }
+    parsed.push({text, options:opts, correct, tag});
+  });
+  return {parsed, errors};
+}
+
+window.saveBulkImport = async function(){
+  const raw = $('bulkText').value;
+  const errEl = $('bulkModalError');
+  errEl.classList.remove('show');
+  const {parsed, errors} = parseBulkText(raw);
+  if(parsed.length===0){
+    errEl.textContent = "Hech qanday to'g'ri formatdagi savol topilmadi."; errEl.classList.add('show'); return;
+  }
+  try{
+    for(const q of parsed){
+      await addDoc(collection(db,'questions'), {...q, createdAt: serverTimestamp()});
+    }
+    closeBulkImport();
+    await loadAdminData();
+    alert(`${parsed.length} ta savol qo'shildi.${errors.length ? ' ('+errors.length+' ta blok formatda xato bo\'lgani uchun o\'tkazib yuborildi)' : ''}`);
+  } catch(err){
+    errEl.textContent = "Xatolik: " + err.message; errEl.classList.add('show');
+  }
+}
+$('bulkText')?.addEventListener?.('input', ()=>{
+  const {parsed, errors} = parseBulkText($('bulkText').value);
+  $('bulkPreview').textContent = parsed.length ? `✓ ${parsed.length} ta savol aniqlandi${errors.length?` (${errors.length} ta xato bloklar o'tkazib yuborildi)`:''}` : '';
+});
+
+// ============================================================
+// ADMIN: ASSIGN TEST
+// ============================================================
+function populateAssignSelectors(){
+  $('assignStudentSelect').innerHTML = students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.username)})${s.group ? ' ['+s.group+']' : ''}</option>`).join('') || '<option disabled>O\'quvchi yo\'q</option>';
+  refreshTagFilters();
+  updateAssignCount();
+  updateGroupAssignCount();
+}
+
+window.switchAssignTab = function(tab){
+  $('assignTabIndividual').classList.toggle('active', tab==='individual');
+  $('assignTabGroup').classList.toggle('active', tab==='group');
+  $('assignIndividualPanel').style.display = tab==='individual' ? '' : 'none';
+  $('assignGroupPanel').style.display = tab==='group' ? '' : 'none';
+  if(tab==='group') updateGroupAssignCount();
+}
+
+window.updateGroupAssignCount = function(){
+  const group = $('assignGroupSelect')?.value || 'UZ';
+  const groupMembers = students.filter(s=>s.group===group);
+  const infoEl = $('groupMembersInfo');
+  if(infoEl){
+    const flag = group==='RU' ? '🇷🇺' : '🇺🇿';
+    infoEl.innerHTML = `${flag} <strong>${group} guruhi:</strong> ${groupMembers.length} ta o'quvchi — ${groupMembers.map(s=>`<span style="background:var(--surface);padding:2px 8px;border-radius:5px;border:1px solid var(--line);font-size:12.5px;">${escapeHtml(s.name)}</span>`).join(' ')||'<em>Hali o\'quvchi yo\'q</em>'}`;
+  }
+  // Folder select populate
+  const folds = getFolders();
+  const sel = $('assignGroupFolderSelect');
+  if(sel){
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">Barcha papkalar (aralash)</option>' + folds.map(f=>`<option value="${escapeHtml(f)}">${escapeHtml(f)}</option>`).join('');
+    sel.value = cur;
+  }
+  const folder = $('assignGroupFolderSelect')?.value || '';
+  const pool = folder ? questions.filter(q=>(q.folder||q.tag||'')===folder) : questions;
+  const hint = $('assignGroupCountHint');
+  if(hint) hint.textContent = `Mavjud savollar: ${pool.length} ta`;
+  const inp = $('assignGroupQuestionCount');
+  if(inp && parseInt(inp.value) > pool.length) inp.value = pool.length || 1;
+}
+
+window.assignGroupTest = async function(){
+  const group = $('assignGroupSelect')?.value;
+  const folder = $('assignGroupFolderSelect')?.value || '';
+  const count = parseInt($('assignGroupQuestionCount').value);
+  const duration = parseInt($('assignGroupDuration').value);
+  const msgEl = $('assignGroupMsg');
+  msgEl.style.color='var(--ink-soft)'; msgEl.textContent='';
+
+  if(!group){ msgEl.style.color='var(--bad)'; msgEl.textContent="Guruh tanlanmagan."; return; }
+  const groupMembers = students.filter(s=>s.group===group);
+  if(groupMembers.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent=`${group} guruhida o'quvchi yo'q.`; return; }
+  const pool = folder ? questions.filter(q=>(q.folder||q.tag||'')===folder) : questions;
+  if(pool.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent="Savollar banki bo'sh."; return; }
+  if(!count || count<1 || !duration || duration<1){ msgEl.style.color='var(--bad)'; msgEl.textContent="To'g'ri savol soni va vaqtni kiriting."; return; }
+
+  if(!confirm(`${group} guruhidagi ${groupMembers.length} ta o'quvchiga ${Math.min(count, pool.length)} ta savol, ${duration} daqiqalik test biriktiriladi. Davom etasizmi?`)) return;
+
+  msgEl.style.color='var(--ink-soft)'; msgEl.textContent='Biriktirilmoqda...';
+  const folderLabel = folder || 'Barcha papkalar';
+  let done = 0;
+
+  try{
+    for(const s of groupMembers){
+      const shuffled = [...pool].sort(()=>Math.random()-0.5);
+      const selected = shuffled.slice(0, Math.min(count, pool.length));
+      const questionIds = selected.map(q=>q.id);
+      await updateDoc(doc(db,'students',s.id), {
+        assignedTest: { questionIds, duration, folder: folderLabel, assignedAt: new Date().toISOString() }
+      });
+      done++;
+      msgEl.textContent = `Biriktirilmoqda... ${done}/${groupMembers.length}`;
+    }
+    msgEl.style.color='var(--good)';
+    msgEl.textContent = `✓ ${group} guruhidagi ${done} ta o'quvchiga test biriktirildi! (${Math.min(count, pool.length)} ta savol, ${duration} daqiqa, ${folderLabel})`;
+    await loadAdminData();
+  } catch(err){
+    msgEl.style.color='var(--bad)'; msgEl.textContent = "Xatolik: " + err.message;
+  }
+}
+
+window.updateAssignCount = function(){
+  const folder = $('assignFolderSelect')?.value || '';
+  const pool = folder ? questions.filter(q=>(q.folder||q.tag||'')===folder) : questions;
+  $('assignCountHint').textContent = `Mavjud savollar: ${pool.length} ta`;
+  const input = $('assignQuestionCount');
+  if(parseInt(input.value) > pool.length) input.value = pool.length || 1;
+}
+
+window.assignTest = async function(){
+  const studentId = $('assignStudentSelect').value;
+  const folder = $('assignFolderSelect')?.value || '';
+  const count = parseInt($('assignQuestionCount').value);
+  const duration = parseInt($('assignDuration').value);
+  const msgEl = $('assignMsg');
+
+  if(!studentId){ msgEl.style.color='var(--bad)'; msgEl.textContent="O'quvchi tanlanmagan."; return; }
+  const pool = folder ? questions.filter(q=>(q.folder||q.tag||'')===folder) : questions;
+  if(pool.length===0){ msgEl.style.color='var(--bad)'; msgEl.textContent="Savollar banki bo'sh."; return; }
+  if(!count || count<1 || !duration || duration<1){ msgEl.style.color='var(--bad)'; msgEl.textContent="To'g'ri savol soni va vaqtni kiriting."; return; }
+
+  const shuffled = [...pool].sort(()=>Math.random()-0.5);
+  const selected = shuffled.slice(0, Math.min(count, pool.length));
+  const questionIds = selected.map(q=>q.id);
+  const folderLabel = folder || 'Barcha papkalar';
+
+  try{
+    await updateDoc(doc(db,'students',studentId), {
+      assignedTest: { questionIds, duration, folder: folderLabel, assignedAt: new Date().toISOString() }
+    });
+    msgEl.style.color='var(--good)';
+    msgEl.textContent = `✓ ${questionIds.length} ta savol, ${duration} daqiqalik test biriktirildi. (${folderLabel})`;
+    await loadAdminData();
+  } catch(err){
+    msgEl.style.color='var(--bad)'; msgEl.textContent = "Xatolik: " + err.message;
+  }
+}
+
+// ============================================================
+// ADMIN: RESULTS
+// ============================================================
+window.renderResults = function(){
+  const tbody = $('resultsTbody');
+  tbody.innerHTML = '';
+  const groupFilter = $('resultsGroupFilter')?.value || '';
+  let filtered = results;
+  if(groupFilter){
+    filtered = results.filter(r=>{
+      const stu = students.find(s=>s.id===r.studentId);
+      return stu?.group === groupFilter;
+    });
+  }
+  $('resultsEmpty').classList.toggle('hidden', filtered.length>0);
+  filtered.forEach(r=>{
+    const pct = Math.round((r.correct/r.total)*100);
+    const pass = pct >= 60;
+    const date = r.completedAt?.toDate ? r.completedAt.toDate().toLocaleString('uz-UZ') : '-';
+    const hasDetail = Array.isArray(r.detail) && r.detail.length>0;
+    const stu = students.find(s=>s.id===r.studentId);
+    const grp = stu?.group || '';
+    const grpBadge = grp==='RU' ? `<span class="badge" style="background:#FEE2E2;color:#B91C1C;">🇷🇺 RU</span>` : grp==='UZ' ? `<span class="badge" style="background:#DBEAFE;color:#1D4ED8;">🇺🇿 UZ</span>` : `<span style="color:var(--ink-soft)">—</span>`;
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${escapeHtml(r.studentName)}</strong></td>
+        <td>${grpBadge}</td>
+        <td>${r.total}</td>
+        <td>${r.correct}</td>
+        <td>${pct}%</td>
+        <td><span class="badge ${pass?'badge-good':'badge-bad'}">${pass?"O'tdi":"O'tmadi"}</span></td>
+        <td>${date}</td>
+        <td>${hasDetail ? `<button class="btn btn-ghost btn-sm" onclick="openResultDetail('${r.id}')">Ko'rish</button>` : `<span style="color:var(--ink-soft); font-size:12.5px;">—</span>`}</td>
+      </tr>`;
+  });
+}
+
+window.openResultDetail = function(resultId){
+  const r = results.find(x=>x.id===resultId);
+  if(!r || !Array.isArray(r.detail)) return;
+  const pct = Math.round((r.correct/r.total)*100);
+  $('resultDetailTitle').textContent = `${r.studentName} — ${r.correct}/${r.total} (${pct}%)`;
+  const body = $('resultDetailBody');
+  body.innerHTML = r.detail.map((d, i)=>{
+    const isCorrect = d.given === d.correct;
+    const givenText = d.given ? `${d.given}) ${escapeHtml(d.options[d.given]||'')}` : "Javob berilmagan";
+    const correctText = `${d.correct}) ${escapeHtml(d.options[d.correct]||'')}`;
+    return `
+      <div style="padding:14px 0; border-bottom:1px solid var(--line);">
+        <div style="font-size:13px; color:var(--ink-soft); font-weight:700; margin-bottom:4px;">Savol ${i+1}</div>
+        <div style="font-weight:600; margin-bottom:8px;">${escapeHtml(d.text)}</div>
+        <div style="font-size:14px; margin-bottom:3px;">
+          <span style="color:${isCorrect?'var(--good)':'var(--bad)'}; font-weight:700;">${isCorrect?'✓':'✗'} O'quvchi javobi:</span>
+          ${escapeHtml(givenText)}
+        </div>
+        ${!isCorrect ? `<div style="font-size:14px; color:var(--good);"><strong>To'g'ri javob:</strong> ${escapeHtml(correctText)}</div>` : ''}
+      </div>`;
+  }).join('');
+  $('resultDetailModalBg').classList.add('show');
+}
+
+window.closeResultDetail = function(){
+  $('resultDetailModalBg').classList.remove('show');
+}
+
+// ============================================================
+// ADMIN: MONITORING (real vaqt)
+// ============================================================
+let monitorInterval = null;
+
+window.refreshMonitor = async function(){
+  const tbody = $('monitorTbody');
+  if(!tbody) return;
+
+  // students ni qayta yuklash
+  const stuSnap = await getDocs(collection(db,'students'));
+  students = stuSnap.docs.map(d=>({id:d.id, ...d.data()}));
+
+  const active = students.filter(s => s.assignedTest && s.assignedTest.questionIds && s.assignedTest.questionIds.length > 0);
+  $('monitorEmpty').classList.toggle('hidden', active.length > 0);
+  tbody.innerHTML = '';
+
+  if(active.length === 0){
+    $('monitorEmpty').classList.remove('hidden');
+    return;
+  }
+
+  active.forEach(s => {
+    const t = s.assignedTest;
+    const assignedAt = t.assignedAt ? new Date(t.assignedAt).toLocaleString('uz-UZ') : '-';
+    const folder = t.folder || '-';
+    const qCount = t.questionIds ? t.questionIds.length : 0;
+    tbody.innerHTML += `
+      <tr>
+        <td>
+          <strong>${escapeHtml(s.name)}</strong>
+          <div style="font-size:12px; color:var(--ink-soft);">${escapeHtml(s.username)}</div>
+        </td>
+        <td>${assignedAt}</td>
+        <td>
+          <span class="badge badge-wait">Test jarayonida</span>
+          <div style="font-size:12px; color:var(--ink-soft); margin-top:3px;">${qCount} ta savol, ${t.duration || '-'} daqiqa</div>
+        </td>
+        <td><span class="badge badge-good">${escapeHtml(folder)}</span></td>
+      </tr>`;
+  });
+}
+
+const _origSwitch = window.switchAdminTab;
+window.switchAdminTab = function(tab){
+  _origSwitch(tab);
+  if(tab === 'monitor'){
+    refreshMonitor();
+    clearInterval(monitorInterval);
+    monitorInterval = setInterval(async () => {
+      await refreshMonitor();
+    }, 30000);
+  } else {
+    clearInterval(monitorInterval);
+  }
+}
+
+// ============================================================
+// STUDENT: HOME
+// ============================================================
+async function loadStudentHome(){
+  const sDoc = await getDoc(doc(db,'students',currentUser.id));
+  currentUser = {id: currentUser.id, ...sDoc.data()};
+  renderStudentTestCard();
+  await loadStudentHistory();
+}
+
+function renderStudentTestCard(){
+  const el = $('studentTestCard');
+  if(!currentUser.assignedTest){
+    el.innerHTML = `<div class="card pad empty-state"><div class="ico">🕊️</div>Hozircha sizga biriktirilgan test yo'q.<br>O'qituvchingiz biriktirgach, shu yerda paydo bo'ladi.</div>`;
+    return;
+  }
+  const t = currentUser.assignedTest;
+  el.innerHTML = `
+    <div class="card pad" style="max-width:480px;">
+      <h3 style="margin-top:0;">Sizga test biriktirilgan</h3>
+      <p style="color:var(--ink-soft); font-size:14.5px;">${t.questionIds.length} ta savol &middot; ${t.duration} daqiqa vaqt beriladi. Boshlagach to'xtatib bo'lmaydi, vaqt tugasa avtomatik yakunlanadi.</p>
+      <button class="btn btn-accent" onclick="startTest()">Testni boshlash</button>
+    </div>`;
+}
+
+window.switchStudentTab = function(tab){
+  document.querySelectorAll('#studentScreen .nav-item').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.student-tab').forEach(t=>t.classList.add('hidden'));
+  $('student-'+tab).classList.remove('hidden');
+  if(tab==='history') loadStudentHistory();
+}
+
+async function loadStudentHistory(){
+  const snap = await getDocs(query(collection(db,'results'), where('studentId','==', currentUser.id), orderBy('completedAt','desc')));
+  const list = snap.docs.map(d=>d.data());
+  const tbody = $('studentHistoryTbody');
+  tbody.innerHTML = '';
+  $('studentHistoryEmpty').classList.toggle('hidden', list.length>0);
+  list.forEach(r=>{
+    const pct = Math.round((r.correct/r.total)*100);
+    const date = r.completedAt?.toDate ? r.completedAt.toDate().toLocaleDateString('uz-UZ') : '-';
+    tbody.innerHTML += `<tr><td>${r.total}</td><td>${r.correct}</td><td>${pct}%</td><td>${date}</td></tr>`;
+  });
+}
+
+// ============================================================
+// TEST TAKING
+// ============================================================
+let activeTest = { questions: [], answers: {}, current: 0, timeLeft: 0, timerHandle: null };
+
+window.shuffleArr = function(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+window.deleteAllQuestions = async function(){
+  if(!questions||questions.length===0){alert("Savollar banki bo'sh!");return;}
+  if(!confirm("Barcha "+questions.length+" ta savol o'chiriladi! Davom etasizmi?"))return;
+  try{
+    await Promise.all(questions.map(q=>deleteDoc(doc(db,'questions',q.id))));
+    await loadAdminData();
+    alert("Barcha savollar o'chirildi.");
+  }catch(err){alert("Xatolik: "+err.message);}
+}
+
+window.startTest = async function(){
+  const t = currentUser.assignedTest;
+  const qDocs = await Promise.all(t.questionIds.map(id => getDoc(doc(db,'questions',id))));
+  let rawQ = qDocs.filter(d=>d.exists()).map(d=>({id:d.id, ...d.data()}));
+
+  // Savollarni aralashtirish
+  rawQ = shuffleArr(rawQ);
+
+  // Variantlarni ham aralashtirish (UZ va RU birga)
+  activeTest.questions = rawQ.map(q=>{
+    const letters=['A','B','C','D'];
+    const sh=shuffleArr(letters);
+    const newOpts={}, newOptsRu={};
+    let newCorr='';
+    sh.forEach((oldL, ni)=>{
+      const newL=letters[ni];
+      newOpts[newL] = q.options ? q.options[oldL] : '';
+      newOptsRu[newL] = q.options_ru ? q.options_ru[oldL] : '';
+      if(oldL===q.correct) newCorr=newL;
+    });
+    return{...q, options:newOpts, options_ru:newOptsRu, correct:newCorr};
+  });
+
+  activeTest.answers = {};
+  activeTest.current = 0;
+
+  // duration ni tekshirish — yo'q bo'lsa 60 daqiqa default
+  const dur = parseInt(t.duration) || 60;
+  activeTest.timeLeft = dur * 60;
+
+  // Tepani yangilash
+  const tot = activeTest.questions.length;
+  const el2 = $('totalCount');
+  const el3 = $('leftCount');
+  if(el2) el2.textContent = tot;
+  if(el3) el3.textContent = tot;
+
+  showScreen('testScreen');
+  updateTimerDisplay(); // darhol vaqtni ko'rsatish
+  renderQuestion();
+  renderDots();
+  updateAnsweredCount();
+  startTimer();
+}
+
+function startTimer(){
+  // Avvalgi timerni to'xtatamiz
+  if(activeTest.timerHandle){
+    clearInterval(activeTest.timerHandle);
+  localStorage.removeItem('tp_teststate');
+    activeTest.timerHandle = null;
+  }
+  // Darhol ko'rsatamiz
+  updateTimerDisplay();
+  // Har soniyada kamaytiramiz
+  let _tick = 0;
+  activeTest.timerHandle = setInterval(function(){
+    if(activeTest.timeLeft > 0){
+      activeTest.timeLeft--;
+      updateTimerDisplay();
+      _tick++;
+      // Har 5 soniyada holatni saqlaymiz
+      if(_tick % 5 === 0) saveTestState();
+    }
+    if(activeTest.timeLeft <= 0){
+      clearInterval(activeTest.timerHandle);
+      activeTest.timerHandle = null;
+      localStorage.removeItem('tp_teststate');
+      finishTest(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const timeLeft = activeTest.timeLeft;
+  if(isNaN(timeLeft) || timeLeft < 0) return;
+  const h = Math.floor(timeLeft/3600);
+  const m = Math.floor((timeLeft%3600)/60);
+  const s = timeLeft%60;
+  const el = $('testTimer');
+  const box = $('timerBox');
+  if(!el) return;
+  el.textContent = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(timeLeft <= 60){
+    el.style.color='#DC2626';
+    if(box){box.style.background='#FEF2F2';box.style.borderColor='#FCA5A5';}
+  } else if(timeLeft <= 300){
+    el.style.color='#D97706';
+    if(box){box.style.background='#FFFBEB';box.style.borderColor='#FCD34D';}
+  } else {
+    el.style.color='#166534';
+    if(box){box.style.background='#F0FDF4';box.style.borderColor='#86EFAC';}
+  }
+}
+
+function updateAnsweredCount(){
+  const answered = Object.keys(activeTest.answers).filter(id => activeTest.answers[id]).length;
+  const total = activeTest.questions.length;
+  const left = total - answered;
+  const el1 = $('answeredCount');
+  const el2 = $('totalCount');
+  const el3 = $('leftCount');
+  const topLabel = $('topLabel');
+  const leftLabel = $('leftLabel');
+  if(el1) el1.textContent = answered;
+  if(el2) el2.textContent = total;
+  if(el3) el3.textContent = left;
+  // Til o'zgarishida labellarni yangilash
+  if(topLabel) topLabel.textContent = currentLang==='ru'?'Отвечено:':'Yechildi:';
+  if(leftLabel) leftLabel.textContent = currentLang==='ru'?'Осталось:':'Qoldi:';
+}
+
+let currentLang = 'uz';
+
+window.setLang = function(l){
+  currentLang = l;
+  const ids=[['loginLangUZ','loginLangRU'],['adminLangUZ','adminLangRU'],['stuLangUZ','stuLangRU'],['langUZ','langRU']];
+  ids.forEach(([uzId,ruId])=>{
+    const uzEl=$(uzId), ruEl=$(ruId);
+    if(uzEl){ uzEl.style.background=l==='uz'?'#4C46B0':'#fff'; uzEl.style.color=l==='uz'?'#fff':'#888'; uzEl.style.borderColor=l==='uz'?'#4C46B0':'#ddd'; }
+    if(ruEl){ ruEl.style.background=l==='ru'?'#4C46B0':'#fff'; ruEl.style.color=l==='ru'?'#fff':'#888'; ruEl.style.borderColor=l==='ru'?'#4C46B0':'#ddd'; }
+  });
+}
+
+window.setTestLang = function(l){
+  currentLang = l;
+  const uz=$('langUZ'),ru=$('langRU');
+  if(uz){ uz.style.background=l==='uz'?'#4C46B0':'#fff'; uz.style.color=l==='uz'?'#fff':'#888'; uz.style.borderColor=l==='uz'?'#4C46B0':'#ddd'; }
+  if(ru){ ru.style.background=l==='ru'?'#4C46B0':'#fff'; ru.style.color=l==='ru'?'#fff':'#888'; ru.style.borderColor=l==='ru'?'#4C46B0':'#ddd'; }
+  renderQuestion();
+}
+
+window.getQText = function(q){
+  if(currentLang==='ru' && q.text_ru) return q.text_ru;
+  return q.text;
+}
+
+window.getOptText = function(q, letter){
+  if(currentLang==='ru'){
+    // options_ru obyektidan qidirish
+    if(q.options_ru && q.options_ru[letter]) return q.options_ru[letter];
+    // Eski usul: A_ru, B_ru...
+    if(q[letter+'_ru']) return q[letter+'_ru'];
+  }
+  return q.options[letter];
+}
+
+function renderQuestion(){
+  const q = activeTest.questions[activeTest.current];
+  const cur = activeTest.current+1;
+  const tot = activeTest.questions.length;
+  $('qProgress').textContent = cur + ' / ' + tot + (currentLang==='ru'?' вопрос':' savol');
+  // Tepa: nechchinchi savol
+  const curEl=$('answeredCount'), totEl=$('totalCount'), leftEl=$('leftCount');
+  if(totEl) totEl.textContent = tot;
+  // labellar
+  const tl=$('topLabel'),ll=$('leftLabel');
+  if(tl) tl.textContent=currentLang==='ru'?'Вопрос:':'Savol:';
+  if(ll) ll.textContent=currentLang==='ru'?'Осталось:':'Qoldi:';
+  // Joriy savol raqamini ko'rsatamiz
+  if(curEl) curEl.textContent = cur;
+  // Qolgan savollar
+  const answered = Object.keys(activeTest.answers).filter(id=>activeTest.answers[id]).length;
+  if(leftEl) leftEl.textContent = tot - answered;
+  const pbar = $('testProgressBar');
+  if(pbar) pbar.style.width = Math.round((cur/tot)*100)+'%';
+  $('qText').textContent = getQText(q);
+  const optsEl = $('qOptions');
+  optsEl.innerHTML = '';
+  ['A','B','C','D'].forEach(letter=>{
+    const selected = activeTest.answers[q.id] === letter;
+    const div = document.createElement('div');
+    div.className = 'opt' + (selected ? ' selected' : '');
+    div.innerHTML = '<div class="letter">'+letter+'</div><div class="opt-text">'+escapeHtml(getOptText(q,letter))+'</div>';
+    div.onclick = () => {
+      activeTest.answers[q.id] = letter;
+      renderQuestion();
+      renderDots();
+      updateAnsweredCount();
+      saveTestState();
+    };
+    optsEl.appendChild(div);
+  });
+}
+
+function renderDots(){
+  const grid = $('dotGrid');
+  if(!grid) return; // yashirilgan bo'lsa — o'tkazib yuboramiz
+  grid.innerHTML = '';
+  activeTest.questions.forEach((q,i)=>{
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (activeTest.answers[q.id] ? ' answered' : '') + (i===activeTest.current ? ' current' : '');
+    dot.textContent = i+1;
+    dot.onclick = () => { activeTest.current = i; renderQuestion(); renderDots(); };
+    grid.appendChild(dot);
+  });
+}
+
+window.nextQuestion = function(){
+  if(activeTest.current < activeTest.questions.length - 1){
+    activeTest.current++;
+    renderQuestion();
+    renderDots();
+  }
+}
+
+window.prevQuestion = function(){
+  if(activeTest.current > 0){
+    activeTest.current--;
+    renderQuestion();
+    renderDots();
+  }
+}
+
+window.skipQuestion = function(){
+  // Javob berilmagan keyingi savolni topadi
+  const total = activeTest.questions.length;
+  let found = -1;
+  // avval joriy pozitsiyadan keyin qidiradi
+  for(let i = activeTest.current + 1; i < total; i++){
+    if(!activeTest.answers[activeTest.questions[i].id]){
+      found = i; break;
+    }
+  }
+  // topilmasa, boshidan qidiradi
+  if(found === -1){
+    for(let i = 0; i < activeTest.current; i++){
+      if(!activeTest.answers[activeTest.questions[i].id]){
+        found = i; break;
+      }
+    }
+  }
+  if(found !== -1){
+    activeTest.current = found;
+    renderQuestion();
+    renderDots();
+  } else {
+    // Hamma savollar yechilgan
+    if(confirm('Barcha savollarga javob berdingiz! Testni yakunlaysizmi?')){
+      finishTest(false);
+    }
+  }
+}
+
+window.finishTest = async function(auto){
+  if(!auto && !confirm("Testni yakunlamoqchimisiz? Javoblarni keyin o'zgartira olmaysiz.")) return;
+  clearInterval(activeTest.timerHandle);
+
+  let correct = 0;
+  const detail = [];
+  activeTest.questions.forEach(q=>{
+    const given = activeTest.answers[q.id] || null;
+    const isCorrect = given === q.correct;
+    if(isCorrect) correct++;
+    detail.push({
+      questionId: q.id,
+      text: q.text,
+      options: q.options,
+      correct: q.correct,
+      given
+    });
+  });
+  const total = activeTest.questions.length;
+
+  try{
+    await addDoc(collection(db,'results'), {
+      studentId: currentUser.id,
+      studentName: currentUser.name,
+      total, correct,
+      detail,
+      completedAt: serverTimestamp()
+    });
+    // testni tugatgach biriktirilgan testni tozalaymiz (qayta yecholmasin)
+    await updateDoc(doc(db,'students',currentUser.id), { assignedTest: null });
+    currentUser.assignedTest = null;
+  } catch(err){
+    console.error(err);
+  }
+
+  const pct = total ? Math.round((correct/total)*100) : 0;
+  const pass = pct >= 60;
+  $('resultCircle').classList.toggle('fail', !pass);
+  $('resultPct').textContent = pct + '%';
+  $('resultFrac').textContent = `${correct} / ${total}`;
+  $('resultTitle').textContent = pass ? "Tabriklaymiz! 🎉" : "Test yakunlandi";
+
+  // O'tdi / O'tmadi badge (siz belgilagan ball asosida)
+  const badge = $('resultBadge');
+  if(pass){
+    badge.textContent = "✓ O'tdi";
+    badge.style.background = 'var(--good-bg)';
+    badge.style.color = 'var(--good)';
+    $('resultSub').textContent = "Siz testdan muvaffaqiyatli o'tdingiz. Natijangiz saqlandi.";
+  } else {
+    badge.textContent = "✗ O'tmadi";
+    badge.style.background = 'var(--bad-bg)';
+    badge.style.color = 'var(--bad)';
+    $('resultSub').textContent = "Natijangiz saqlandi. Keyingi safar omad tilaymiz!";
+  }
+  showScreen('resultScreen');
+}
+
+window.backToStudentHome = async function(){
+  await loadStudentHome();
+  showScreen('studentScreen');
+  switchStudentTab('home');
+}
+
+</script>
+</body>
+</html>
